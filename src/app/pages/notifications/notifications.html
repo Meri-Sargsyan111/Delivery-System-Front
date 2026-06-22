@@ -1,0 +1,11 @@
+<h1>🔔 Notifications</h1>
+
+<p>Total Notifications: {{ notifications.length }}</p>
+
+@for (notification of notifications; track notification) {
+
+<div class="notification-card">
+  {{ notification }}
+</div>
+
+}

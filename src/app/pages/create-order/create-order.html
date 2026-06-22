@@ -1,0 +1,77 @@
+<div class="container mt-5">
+
+  <div class="row justify-content-center">
+
+    <div class="col-md-6">
+
+      <div class="card shadow">
+
+        <div class="card-body">
+
+          <h2 class="text-center mb-4">
+            ➕ Create Order
+          </h2>
+
+          <div class="mb-3">
+
+            <label class="form-label">
+              Customer Name
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter customer name"
+              [(ngModel)]="customerName">
+
+          </div>
+
+          <div class="mb-3">
+
+            <label class="form-label">
+              From Address
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter pickup address"
+              [(ngModel)]="fromAddress">
+
+          </div>
+
+          <div class="mb-3">
+
+            <label class="form-label">
+              To Address
+            </label>
+
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Enter destination address"
+              [(ngModel)]="toAddress">
+
+          </div>
+
+          <div class="d-grid">
+
+            <button
+              class="btn btn-primary btn-lg"
+              (click)="createOrder()">
+
+              Create Order
+
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

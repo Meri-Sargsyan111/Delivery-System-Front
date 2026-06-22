@@ -1,0 +1,33 @@
+<h1>🚚 Tracking</h1>
+
+<div class="tracking-container">
+
+  <input
+    type="number"
+    placeholder="Enter Order ID"
+    [(ngModel)]="orderId">
+
+  <button (click)="trackOrder()">
+    Track Order
+  </button>
+
+  <hr>
+
+  <p>Total Events: {{ events.length }}</p>
+
+  @for (event of events; track event.id) {
+
+  <div class="result">
+
+    <p><b>Order ID:</b> {{ event.orderId }}</p>
+
+    <p><b>Status:</b> {{ event.status }}</p>
+
+    <p><b>Courier:</b> {{ event.courierName }}</p>
+
+  </div>
+
+  }
+
+</div>
+

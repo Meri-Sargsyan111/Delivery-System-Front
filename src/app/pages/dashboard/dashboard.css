@@ -1,0 +1,46 @@
+.title{
+  text-align:center;
+  margin-top:30px;
+  margin-bottom:30px;
+}
+
+.cards{
+  display:flex;
+  justify-content:center;
+  gap:25px;
+  flex-wrap:wrap;
+}
+
+.card{
+  width:220px;
+  padding:25px;
+  border-radius:15px;
+  color:white;
+  text-align:center;
+  box-shadow:0 4px 10px rgba(0,0,0,0.2);
+}
+
+.card h2{
+  font-size:40px;
+  margin-bottom:10px;
+}
+
+.card p{
+  font-size:18px;
+}
+
+.total{
+  background:#0d6efd;
+}
+
+.created{
+  background:#fd7e14;
+}
+
+.delivered{
+  background:#198754;
+}
+
+.cancelled{
+  background:#dc3545;
+}

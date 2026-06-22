@@ -1,0 +1,23 @@
+<h1>🚚 Delivery System</h1>
+<h1 style="color:green">ORDERS COMPONENT</h1>
+<table>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Customer</th>
+    <th>From</th>
+    <th>To</th>
+    <th>Status</th>
+  </tr>
+  </thead>
+
+  <tbody>
+  <tr *ngFor="let order of orders">
+    <td>{{ order.id }}</td>
+    <td>{{ order.customerName }}</td>
+    <td>{{ order.fromAddress }}</td>
+    <td>{{ order.toAddress }}</td>
+    <td>{{ order.status }}</td>
+  </tr>
+  </tbody>
+</table>
