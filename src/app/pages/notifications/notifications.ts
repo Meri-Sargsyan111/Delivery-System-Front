@@ -1,6 +1,7 @@
-import { Component, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
+import { WebSocketService } from '../../services/websocket.service';
 
 @Component({
   selector: 'app-notifications',
@@ -9,15 +10,24 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './notifications.html',
   styleUrls: ['./notifications.css']
 })
-export class Notifications {
+export class Notifications implements OnDestroy {
 
   private http = inject(HttpClient);
   private cdr = inject(ChangeDetectorRef);
+  private webSocketService = inject(WebSocketService);
 
   notifications: string[] = [];
 
   constructor() {
     this.loadNotifications();
+
+    this.webSocketService.connect((message: string) => {
+
+      this.notifications.unshift(message);
+
+      this.cdr.detectChanges();
+
+    });
   }
 
   loadNotifications() {
@@ -37,5 +47,9 @@ export class Notifications {
           console.error(err);
         }
       });
+  }
+
+  ngOnDestroy(): void {
+    this.webSocketService.disconnect();
   }
 }
