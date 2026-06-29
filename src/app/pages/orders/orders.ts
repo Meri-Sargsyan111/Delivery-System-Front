@@ -16,9 +16,9 @@ export class Orders implements OnInit {
   constructor(private http: HttpClient) {}
 
   ngOnInit(): void {
-    this.http.get<any[]>('http://localhost:8081/orders')
+    this.http.get<any>('http://localhost:8081/orders')
       .subscribe(data => {
-        this.orders = data;
+        this.orders = data.content;
       });
   }
 }

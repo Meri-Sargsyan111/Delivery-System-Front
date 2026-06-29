@@ -25,29 +25,22 @@ export class Dashboard {
 
   loadStatistics() {
 
-    this.http.get<any[]>('http://localhost:8081/orders')
+    this.http.get<any>('http://localhost:8081/orders')
       .subscribe({
         next: (data) => {
 
-          console.log('DASHBOARD DATA', data);
+          const orders = data.content;
 
-          this.totalOrders = data.length;
+          this.totalOrders = orders.length;
 
           this.deliveredOrders =
-            data.filter(o => o.status === 'DELIVERED').length;
+            orders.filter((o: any) => o.status === 'DELIVERED').length;
 
           this.cancelledOrders =
-            data.filter(o => o.status === 'CANCELLED').length;
+            orders.filter((o: any) => o.status === 'CANCELLED').length;
 
           this.createdOrders =
-            data.filter(o => o.status === 'CREATED').length;
-
-          console.log(
-            this.totalOrders,
-            this.createdOrders,
-            this.deliveredOrders,
-            this.cancelledOrders
-          );
+            orders.filter((o: any) => o.status === 'CREATED').length;
 
           this.cdr.detectChanges();
         },

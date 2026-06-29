@@ -33,13 +33,13 @@ export class Notifications implements OnDestroy {
   loadNotifications() {
 
     this.http
-      .get<string[]>('http://localhost:8080/notifications')
+      .get<any>('http://localhost:8080/notifications')
       .subscribe({
         next: (data) => {
 
           console.log('NOTIFICATIONS DATA:', data);
 
-          this.notifications = [...data];
+          this.notifications = [...data.content];
 
           this.cdr.detectChanges();
         },

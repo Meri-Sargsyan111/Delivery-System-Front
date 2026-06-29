@@ -22,12 +22,12 @@ export class OrdersList {
   }
 
   loadOrders() {
-    this.http.get<any[]>('http://localhost:8081/orders')
+    this.http.get<any>('http://localhost:8081/orders')
       .subscribe({
         next: (data) => {
 
-          this.orders = [...data];
-          this.allOrders = [...data];
+          this.orders = [...data.content];
+          this.allOrders = [...data.content];
 
           this.cdr.detectChanges();
 
