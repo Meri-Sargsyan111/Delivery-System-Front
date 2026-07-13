@@ -1,0 +1,90 @@
+<div class="info-shell">
+
+  <app-info-header></app-info-header>
+
+  <main class="info-content">
+
+    <div class="page-header">
+      <h1><i class="bi bi-diagram-3"></i> How It Works</h1>
+      <p class="subtitle">The delivery workflow, from order creation to completion</p>
+    </div>
+
+    <ol class="workflow">
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-plus-circle"></i></div>
+        <div class="step-body">
+          <h3>Create Order</h3>
+          <p>A new delivery order is created through the Angular frontend.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-gear"></i></div>
+        <div class="step-body">
+          <h3>Order Processing</h3>
+          <p>Backend microservices process the order and manage its delivery status.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-truck"></i></div>
+        <div class="step-body">
+          <h3>Courier Processing</h3>
+          <p>The courier service handles courier assignment and delivery processing.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-diagram-3"></i></div>
+        <div class="step-body">
+          <h3>Kafka Events</h3>
+          <p>Services communicate asynchronously through Apache Kafka events.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-geo-alt"></i></div>
+        <div class="step-body">
+          <h3>Live Courier Location</h3>
+          <p>Courier location updates are streamed in real time as the delivery progresses.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-broadcast"></i></div>
+        <div class="step-body">
+          <h3>WebSocket / STOMP</h3>
+          <p>The Angular frontend receives those location updates through a WebSocket/STOMP connection.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-map"></i></div>
+        <div class="step-body">
+          <h3>Google Maps Live Tracking</h3>
+          <p>The courier marker moves on Google Maps as new position updates arrive.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-bell"></i></div>
+        <div class="step-body">
+          <h3>Notifications</h3>
+          <p>Real-time notifications inform the user about relevant delivery events.</p>
+        </div>
+      </li>
+
+      <li class="workflow-step">
+        <div class="step-marker"><i class="bi bi-check-circle"></i></div>
+        <div class="step-body">
+          <h3>Delivery Completed</h3>
+          <p>The order status is finalized and its tracking history reflects the completed delivery.</p>
+        </div>
+      </li>
+
+    </ol>
+
+  </main>
+
+</div>

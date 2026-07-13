@@ -1,70 +1,182 @@
-<div class="container mt-5">
+<div class="container-fluid px-0">
 
   <div class="row justify-content-center">
 
-    <div class="col-md-6">
+    <div class="col-md-7 col-lg-6">
 
-      <div class="card shadow">
+      <div class="card shadow create-order-card">
 
         <div class="card-body">
 
-          <h2 class="text-center mb-4">
-            ➕ Create Order
+          <div class="form-icon"><i class="bi bi-plus-circle"></i></div>
+
+          <h2 class="text-center mb-1">
+            {{ 'createOrder.title' | t }}
           </h2>
+          <p class="text-center subtitle mb-4">
+            {{ 'createOrder.subtitle' | t }}
+          </p>
 
-          <div class="mb-3">
+          @if (successMessage()) {
+            <div class="order-alert order-alert-success" role="alert">
+              <i class="bi bi-check-circle"></i>
+              <span>{{ successMessage() }}</span>
+            </div>
+          }
 
-            <label class="form-label">
-              Customer Name
-            </label>
+          @if (errorMessage()) {
+            <div class="order-alert order-alert-error" role="alert">
+              <i class="bi bi-exclamation-triangle"></i>
+              <span>{{ errorMessage() }}</span>
+            </div>
+          }
 
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Enter customer name"
-              [(ngModel)]="customerName">
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
 
-          </div>
+            <section class="form-section">
+              <div class="form-section-header">
+                <i class="bi bi-person-badge"></i>
+                <span>{{ 'createOrder.sectionContact' | t }}</span>
+              </div>
 
-          <div class="mb-3">
+              <div class="form-floating mb-3">
 
-            <label class="form-label">
-              From Address
-            </label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="customerName"
+                  [placeholder]="'createOrder.customerNamePlaceholder' | t"
+                  formControlName="customerName"
+                  [class.is-invalid]="customerName.invalid && (customerName.touched || submitted)">
 
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Enter pickup address"
-              [(ngModel)]="fromAddress">
+                <label for="customerName">
+                  <i class="bi bi-person"></i> {{ 'createOrder.customerNameLabel' | t }}
+                </label>
 
-          </div>
+                @if (customerName.invalid && (customerName.touched || submitted)) {
+                  <div class="field-error">
+                    @if (customerName.errors?.['required']) {
+                      <span>{{ 'createOrder.customerNameRequired' | t }}</span>
+                    }
+                  </div>
+                }
 
-          <div class="mb-3">
+              </div>
 
-            <label class="form-label">
-              To Address
-            </label>
+              <div class="form-floating mb-3">
 
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Enter destination address"
-              [(ngModel)]="toAddress">
+                <input
+                  type="tel"
+                  class="form-control"
+                  id="customerPhone"
+                  maxlength="20"
+                  [placeholder]="'createOrder.customerPhonePlaceholder' | t"
+                  formControlName="customerPhone"
+                  [class.is-invalid]="customerPhone.invalid && (customerPhone.touched || submitted)">
 
-          </div>
+                <label for="customerPhone">
+                  <i class="bi bi-telephone"></i> {{ 'createOrder.customerPhoneLabel' | t }}
+                </label>
 
-          <div class="d-grid">
+                @if (customerPhone.invalid && (customerPhone.touched || submitted)) {
+                  <div class="field-error">
+                    @if (customerPhone.errors?.['required']) {
+                      <span>{{ 'createOrder.customerPhoneRequired' | t }}</span>
+                    } @else if (customerPhone.errors?.['maxlength']) {
+                      <span>{{ 'createOrder.customerPhoneMaxLength' | t }}</span>
+                    } @else if (customerPhone.errors?.['phoneFormat']) {
+                      <span>{{ 'createOrder.customerPhoneInvalid' | t }}</span>
+                    }
+                  </div>
+                }
 
-            <button
-              class="btn btn-primary btn-lg"
-              (click)="createOrder()">
+              </div>
+            </section>
 
-              Create Order
+            <section class="form-section">
+              <div class="form-section-header">
+                <i class="bi bi-geo-alt"></i>
+                <span>{{ 'createOrder.sectionPickup' | t }}</span>
+              </div>
 
-            </button>
+              <div class="form-floating mb-3">
 
-          </div>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="fromAddress"
+                  [placeholder]="'createOrder.fromAddressPlaceholder' | t"
+                  formControlName="fromAddress"
+                  [class.is-invalid]="fromAddress.invalid && (fromAddress.touched || submitted)">
+
+                <label for="fromAddress">
+                  <i class="bi bi-geo-alt"></i> {{ 'createOrder.fromAddressLabel' | t }}
+                </label>
+
+                @if (fromAddress.invalid && (fromAddress.touched || submitted)) {
+                  <div class="field-error">
+                    @if (fromAddress.errors?.['required']) {
+                      <span>{{ 'createOrder.fromAddressRequired' | t }}</span>
+                    }
+                  </div>
+                }
+
+              </div>
+            </section>
+
+            <section class="form-section">
+              <div class="form-section-header">
+                <i class="bi bi-flag"></i>
+                <span>{{ 'createOrder.sectionDestination' | t }}</span>
+              </div>
+
+              <div class="form-floating mb-3">
+
+                <input
+                  type="text"
+                  class="form-control"
+                  id="toAddress"
+                  [placeholder]="'createOrder.toAddressPlaceholder' | t"
+                  formControlName="toAddress"
+                  [class.is-invalid]="toAddress.invalid && (toAddress.touched || submitted)">
+
+                <label for="toAddress">
+                  <i class="bi bi-flag"></i> {{ 'createOrder.toAddressLabel' | t }}
+                </label>
+
+                @if (toAddress.invalid && (toAddress.touched || submitted)) {
+                  <div class="field-error">
+                    @if (toAddress.errors?.['required']) {
+                      <span>{{ 'createOrder.toAddressRequired' | t }}</span>
+                    }
+                  </div>
+                }
+
+              </div>
+            </section>
+
+            <section class="form-section form-section-confirm">
+              <div class="form-section-header">
+                <i class="bi bi-clipboard-check"></i>
+                <span>{{ 'createOrder.sectionConfirm' | t }}</span>
+              </div>
+
+              <div class="d-grid">
+
+                <button type="submit" class="btn btn-primary btn-lg" [disabled]="isSubmitting()">
+                  @if (isSubmitting()) {
+                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    <span>{{ 'createOrder.creating' | t }}</span>
+                  } @else {
+                    <i class="bi bi-send-check"></i>
+                    <span>{{ 'createOrder.submit' | t }}</span>
+                  }
+                </button>
+
+              </div>
+            </section>
+
+          </form>
 
         </div>
 

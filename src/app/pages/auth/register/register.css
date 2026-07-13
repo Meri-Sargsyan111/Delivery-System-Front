@@ -1,0 +1,173 @@
+@keyframes auth-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+  border-radius: var(--radius-md);
+  padding: var(--space-2);
+  animation: auth-card-in 0.45s ease both;
+}
+
+.form-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  margin: 0 auto var(--space-3) auto;
+  border-radius: var(--radius-md);
+  background: var(--color-accent-gradient);
+  color: #fff;
+  font-size: 1.3rem;
+}
+
+.card-body h2 {
+  color: var(--color-text-primary);
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+}
+
+.form-floating > label {
+  color: var(--color-text-muted);
+}
+
+.form-floating > label i {
+  margin-right: 6px;
+}
+
+.field-error {
+  margin-top: var(--space-1);
+  font-size: 0.8rem;
+  color: var(--color-danger);
+  animation: auth-card-in 0.2s ease both;
+}
+
+.auth-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-size: 0.88rem;
+  font-weight: 500;
+  animation: auth-card-in 0.2s ease both;
+}
+
+.password-field {
+  position: relative;
+}
+
+.password-field .form-control {
+  padding-right: 44px;
+}
+
+.password-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 56px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  transition: color var(--transition-fast);
+}
+
+.password-toggle:hover {
+  color: var(--color-accent);
+}
+
+.role-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.role-label {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.role-toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.role-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-secondary);
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.role-toggle i {
+  font-size: 1.1rem;
+}
+
+.role-toggle:hover {
+  border-color: var(--color-accent);
+  color: var(--color-text-primary);
+}
+
+.role-toggle.active {
+  background: var(--color-accent-gradient);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 6px 18px var(--color-accent-soft);
+}
+
+.btn-lg {
+  padding: var(--space-3) var(--space-4);
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.switch-link {
+  margin: var(--space-4) 0 0 0;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+}
+
+.switch-link a {
+  color: var(--color-accent-hover);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.switch-link a:hover {
+  text-decoration: underline;
+}

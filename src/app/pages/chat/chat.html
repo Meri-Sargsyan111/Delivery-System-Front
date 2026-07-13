@@ -1,0 +1,109 @@
+<div class="chat-page">
+
+  <header class="chat-header">
+    <button type="button" class="chat-back" (click)="goBack()" [attr.aria-label]="'chat.backToOrdersAria' | t">
+      <i class="bi bi-arrow-left"></i>
+    </button>
+    <div class="chat-header-info">
+      <h1>{{ 'chat.header' | t: { id: orderId } }}</h1>
+      @if (order(); as o) {
+        <p class="chat-header-sub">{{ o.fromAddress }} &rarr; {{ o.toAddress }} &middot; {{ orderStatusKey(o.status) | t }}</p>
+      }
+    </div>
+    @if (connectionState() === 'reconnecting') {
+      <span class="chat-status chat-status-warn">{{ 'chat.reconnecting' | t }}</span>
+    } @else if (connectionState() === 'connected') {
+      <span class="chat-status chat-status-ok">{{ 'chat.live' | t }}</span>
+    }
+  </header>
+
+  @switch (viewState()) {
+
+    @case ('loading') {
+      <div class="chat-state">
+        <div class="spinner"></div>
+        <p>{{ 'chat.loadingConversation' | t }}</p>
+      </div>
+    }
+
+    @case ('denied') {
+      <div class="chat-state chat-state-error">
+        <i class="bi bi-shield-lock"></i>
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/orders" class="btn-secondary">{{ 'chat.backToOrders' | t }}</a>
+      </div>
+    }
+
+    @case ('unavailable') {
+      <div class="chat-state">
+        <i class="bi bi-hourglass-split"></i>
+        <p>{{ errorMessage() }}</p>
+        <a routerLink="/orders" class="btn-secondary">{{ 'chat.backToOrders' | t }}</a>
+      </div>
+    }
+
+    @case ('error') {
+      <div class="chat-state chat-state-error">
+        <i class="bi bi-exclamation-triangle"></i>
+        <p>{{ errorMessage() }}</p>
+        <button type="button" class="btn-secondary" (click)="ngOnInit()">{{ 'chat.tryAgain' | t }}</button>
+      </div>
+    }
+
+    @case ('ready') {
+
+      <div class="chat-messages" #messageList>
+        @if (messages().length === 0) {
+          <div class="chat-empty">
+            <i class="bi bi-chat-dots"></i>
+            <p>{{ 'chat.noMessagesYet' | t: { otherParty: (otherPartyLabelKey() | t) } }}</p>
+          </div>
+        } @else {
+          @for (message of messages(); track message.id) {
+            <div class="chat-bubble-row" [class.own]="isOwnMessage(message)">
+              <div class="chat-bubble">
+                <span class="chat-bubble-sender">
+                  {{ isOwnMessage(message) ? ('chat.you' | t) : (otherPartyLabelKey() | t) }}
+                </span>
+                <p class="chat-bubble-content">{{ message.content }}</p>
+                <span class="chat-bubble-time">{{ formatTime(message.sentAt) }}</span>
+              </div>
+            </div>
+          }
+        }
+      </div>
+
+      @if (isOrderTerminal()) {
+        <div class="chat-send-disabled">
+          <i class="bi bi-lock"></i>
+          <span>{{ 'chat.sendDisabled' | t: { status: (orderStatusKey(order()?.status) | t) } }}</span>
+        </div>
+      } @else if (sendError()) {
+        <div class="chat-send-error">
+          <span>{{ sendError() }}</span>
+          @if (draft === '') {
+            <button type="button" (click)="retryUnsent()">{{ 'chat.restoreMessage' | t }}</button>
+          }
+        </div>
+      }
+
+      <form class="chat-input-row" (ngSubmit)="send()">
+        <input
+          type="text"
+          name="draft"
+          [(ngModel)]="draft"
+          [placeholder]="'chat.typeMessage' | t"
+          [disabled]="!canSend()"
+          maxlength="2000"
+          autocomplete="off"
+        />
+        <button type="submit" [disabled]="!canSend() || !draft.trim()">
+          <i class="bi bi-send"></i>
+        </button>
+      </form>
+
+    }
+
+  }
+
+</div>

@@ -1,0 +1,31 @@
+<div class="splash-root" [class.hide]="phase() === 'fadeout'">
+
+  <canvas #lettersCanvas class="splash-canvas" [class.hidden]="atLeast('title')"></canvas>
+
+  <div class="splash-stage">
+
+    <h1 class="splash-title" [class.show]="atLeast('title')" [class.fade-exit]="atLeast('exit')">
+      <span class="line">DELIVERY</span>
+      <span class="line">SYSTEM</span>
+    </h1>
+
+    <div class="delivery-stage">
+
+      <span class="package-icon" [class.show]="atLeast('package')" [class.fade-exit]="atLeast('exit')">📦</span>
+
+      <span class="route-line" [class.grow]="atLeast('route')" [class.fade-exit]="atLeast('exit')"></span>
+
+      <div class="truck-wrap" [class.drive]="atLeast('truck')">
+        <div class="particles">
+          @for (p of particles; track p.id) {
+            <span class="particle" [style.top.px]="p.top" [style.animation-delay.ms]="p.delay"></span>
+          }
+        </div>
+        <span class="truck-icon">🚚</span>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>

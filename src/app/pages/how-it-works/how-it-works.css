@@ -1,0 +1,115 @@
+.info-shell {
+  min-height: 100vh;
+  background: var(--color-bg);
+}
+
+.info-content {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-7) var(--space-6);
+}
+
+.page-header {
+  margin-bottom: var(--space-6);
+}
+
+.page-header h1 {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+}
+
+.page-header h1 i {
+  color: var(--color-accent);
+}
+
+.subtitle {
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+.workflow {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.workflow-step {
+  position: relative;
+  display: flex;
+  gap: var(--space-5);
+  padding-bottom: var(--space-6);
+}
+
+.workflow-step:last-child {
+  padding-bottom: 0;
+}
+
+.workflow-step:not(:last-child)::before {
+  content: '';
+  position: absolute;
+  top: 48px;
+  left: 23px;
+  width: 2px;
+  bottom: 0;
+  background: var(--color-border-strong);
+}
+
+.step-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  background: var(--color-accent-gradient);
+  color: #fff;
+  font-size: 1.25rem;
+  position: relative;
+  z-index: 1;
+  box-shadow: var(--shadow-sm);
+}
+
+.step-body {
+  flex: 1;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-4) var(--space-5);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-base), transform var(--transition-base);
+}
+
+.workflow-step:hover .step-body {
+  border-color: var(--color-accent);
+  transform: translateX(4px);
+}
+
+.step-body h3 {
+  margin: 0 0 var(--space-1) 0;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.step-body p {
+  margin: 0;
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+@media (max-width: 576px) {
+  .info-content {
+    padding: var(--space-5) var(--space-4);
+  }
+
+  .workflow-step {
+    gap: var(--space-3);
+  }
+}

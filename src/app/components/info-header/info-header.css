@@ -1,0 +1,97 @@
+.info-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: 0 var(--space-6);
+  min-height: var(--topbar-height);
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 900;
+  flex-wrap: wrap;
+}
+
+.info-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  text-decoration: none;
+  color: var(--color-text-primary);
+  font-weight: 700;
+  font-size: 1.05rem;
+  padding: var(--space-3) 0;
+}
+
+.info-brand .brand-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-accent-gradient);
+  color: #fff;
+  font-size: 1.1rem;
+}
+
+.info-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.info-nav a {
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.92rem;
+  padding: var(--space-2) 0;
+  border-bottom: 2px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast);
+}
+
+.info-nav a:hover {
+  color: var(--color-text-primary);
+}
+
+.info-nav a.active {
+  color: var(--color-accent-hover);
+  border-color: var(--color-accent);
+}
+
+.info-back-link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  font-size: 0.88rem;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  transition: color var(--transition-fast), border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.info-back-link:hover {
+  color: var(--color-accent-hover);
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+}
+
+@media (max-width: 600px) {
+  .info-header {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .info-nav {
+    gap: var(--space-3);
+  }
+
+  .info-back-link span {
+    display: none;
+  }
+}

@@ -1,25 +1,153 @@
-<h1 class="title">📊 Delivery Dashboard</h1>
+<div class="page-header">
 
-<div class="cards">
-
-  <div class="card total">
-    <h2>{{ totalOrders }}</h2>
-    <p>Total Orders</p>
+  <div class="page-header-text">
+    <h1 class="title"><i class="bi bi-grid-1x2"></i> {{ 'dashboard.title' | t }}</h1>
+    <p class="subtitle">{{ 'dashboard.subtitle' | t }}</p>
   </div>
 
-  <div class="card created">
-    <h2>{{ createdOrders }}</h2>
-    <p>Created Orders</p>
-  </div>
-
-  <div class="card delivered">
-    <h2>{{ deliveredOrders }}</h2>
-    <p>Delivered Orders</p>
-  </div>
-
-  <div class="card cancelled">
-    <h2>{{ cancelledOrders }}</h2>
-    <p>Cancelled Orders</p>
+  <div class="system-status" [class.status-issue]="!connectionOk">
+    <span class="status-dot"></span>
+    <span class="status-text">{{ (connectionOk ? 'dashboard.systemLive' : 'dashboard.systemIssue') | t }}</span>
+    @if (lastUpdated) {
+      <span class="status-updated">{{ 'dashboard.lastUpdated' | t: { time: lastUpdated.toLocaleTimeString() } }}</span>
+    }
   </div>
 
 </div>
+
+<div class="kpi-row">
+
+  <div class="kpi-card kpi-total" role="button" tabindex="0" (click)="goToOrders()" (keydown.enter)="goToOrders()">
+    <div class="kpi-icon"><i class="bi bi-collection"></i></div>
+    <div class="kpi-body">
+      <span class="kpi-value">{{ totalOrders }}</span>
+      <span class="kpi-label">{{ 'dashboard.totalOrders' | t }}</span>
+    </div>
+  </div>
+
+  <div class="kpi-card kpi-progress" role="button" tabindex="0" (click)="goToOrders('IN_PROGRESS')" (keydown.enter)="goToOrders('IN_PROGRESS')">
+    <div class="kpi-icon"><i class="bi bi-lightning-charge"></i></div>
+    <div class="kpi-body">
+      <span class="kpi-value">{{ inProgressOrders }}</span>
+      <span class="kpi-label">{{ 'dashboard.inProgressOrders' | t }}</span>
+    </div>
+  </div>
+
+  <div class="kpi-card kpi-delivered" role="button" tabindex="0" (click)="goToOrders('DELIVERED')" (keydown.enter)="goToOrders('DELIVERED')">
+    <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
+    <div class="kpi-body">
+      <span class="kpi-value">{{ deliveredOrders }}</span>
+      <span class="kpi-label">{{ 'dashboard.deliveredOrders' | t }}</span>
+    </div>
+  </div>
+
+  <div class="kpi-card kpi-cancelled" role="button" tabindex="0" (click)="goToOrders('CANCELLED')" (keydown.enter)="goToOrders('CANCELLED')">
+    <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
+    <div class="kpi-body">
+      <span class="kpi-value">{{ cancelledOrders }}</span>
+      <span class="kpi-label">{{ 'dashboard.cancelledOrders' | t }}</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="ops-grid">
+
+  <section class="panel panel-distribution">
+
+    <div class="panel-header">
+      <i class="bi bi-bar-chart-steps"></i>
+      <span>{{ 'dashboard.distribution' | t }}</span>
+    </div>
+
+    <div class="dist-list">
+
+      <div class="dist-row">
+        <span class="dist-dot dot-created"></span>
+        <span class="dist-label">{{ 'dashboard.created' | t }}</span>
+        <div class="dist-track">
+          <div class="dist-bar bar-created" [style.width.%]="(createdOrders / (totalOrders || 1)) * 100"></div>
+        </div>
+        <span class="dist-count">{{ createdOrders }}</span>
+      </div>
+
+      <div class="dist-row">
+        <span class="dist-dot dot-progress"></span>
+        <span class="dist-label">{{ 'dashboard.inProgress' | t }}</span>
+        <div class="dist-track">
+          <div class="dist-bar bar-progress" [style.width.%]="(inProgressOrders / (totalOrders || 1)) * 100"></div>
+        </div>
+        <span class="dist-count">{{ inProgressOrders }}</span>
+      </div>
+
+      <div class="dist-row">
+        <span class="dist-dot dot-delivered"></span>
+        <span class="dist-label">{{ 'dashboard.delivered' | t }}</span>
+        <div class="dist-track">
+          <div class="dist-bar bar-delivered" [style.width.%]="(deliveredOrders / (totalOrders || 1)) * 100"></div>
+        </div>
+        <span class="dist-count">{{ deliveredOrders }}</span>
+      </div>
+
+      <div class="dist-row">
+        <span class="dist-dot dot-cancelled"></span>
+        <span class="dist-label">{{ 'dashboard.cancelled' | t }}</span>
+        <div class="dist-track">
+          <div class="dist-bar bar-cancelled" [style.width.%]="(cancelledOrders / (totalOrders || 1)) * 100"></div>
+        </div>
+        <span class="dist-count">{{ cancelledOrders }}</span>
+      </div>
+
+    </div>
+
+  </section>
+
+  <aside class="panel panel-summary">
+
+    <div class="panel-header">
+      <i class="bi bi-speedometer2"></i>
+      <span>{{ 'dashboard.summaryTitle' | t }}</span>
+    </div>
+
+    <div class="summary-stat">
+      <span class="summary-stat-label">{{ 'dashboard.completionRate' | t }}</span>
+      <span class="summary-stat-value text-success">{{ totalOrders ? ((deliveredOrders / totalOrders) * 100 | number:'1.0-0') : 0 }}%</span>
+    </div>
+
+    <div class="summary-stat">
+      <span class="summary-stat-label">{{ 'dashboard.cancellationRate' | t }}</span>
+      <span class="summary-stat-value text-danger">{{ totalOrders ? ((cancelledOrders / totalOrders) * 100 | number:'1.0-0') : 0 }}%</span>
+    </div>
+
+    <div class="summary-stat">
+      <span class="summary-stat-label">{{ 'dashboard.createdShare' | t }}</span>
+      <span class="summary-stat-value text-warning">{{ createdOrders }}</span>
+    </div>
+
+  </aside>
+
+</div>
+
+<section class="panel panel-recent">
+
+  <div class="panel-header">
+    <i class="bi bi-clock-history"></i>
+    <span>{{ 'dashboard.recentActivity' | t }}</span>
+  </div>
+
+  <div class="recent-list">
+
+    @for (order of recentOrders; track order.id) {
+      <div class="recent-row">
+        <span class="recent-id">#{{ order.id }}</span>
+        <span class="recent-customer">{{ order.customerName }}</span>
+        <span class="recent-route">{{ order.fromAddress }} <i class="bi bi-arrow-right"></i> {{ order.toAddress }}</span>
+        <span class="status-badge" [attr.data-status]="order.status">{{ orderStatusKey(order.status) | t }}</span>
+      </div>
+    } @empty {
+      <div class="recent-empty">{{ 'dashboard.noRecentOrders' | t }}</div>
+    }
+
+  </div>
+
+</section>

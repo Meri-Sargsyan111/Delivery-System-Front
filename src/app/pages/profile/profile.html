@@ -1,0 +1,202 @@
+<div class="page-header">
+  <h1><i class="bi bi-person-badge"></i> {{ 'profile.title' | t }}</h1>
+  <p class="subtitle">{{ 'profile.subtitle' | t }}</p>
+</div>
+<div class="card shadow profile-card">
+
+  <div class="card-body">
+
+    @if (successMessage()) {
+      <div class="profile-alert profile-alert-success" role="alert">
+        <i class="bi bi-check-circle"></i>
+        <span>{{ successMessage() }}</span>
+      </div>
+    }
+
+    @if (errorMessage()) {
+      <div class="profile-alert profile-alert-error" role="alert">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    @if (isLoading()) {
+
+      <div class="profile-loading">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span>{{ 'profile.loading' | t }}</span>
+      </div>
+
+    } @else {
+
+      <div class="profile-identity">
+
+        <button
+          type="button"
+          class="profile-identity-avatar profile-identity-avatar-button"
+          (click)="openAvatarPicker()"
+          [disabled]="isUploadingAvatar()"
+          [attr.aria-label]="'profile.avatarChangeLabel' | t">
+
+          @if (showAvatarImage()) {
+            <img [src]="displayAvatarUrl()" [alt]="'profile.avatarAlt' | t" (error)="onAvatarError()">
+          } @else {
+            <i class="bi bi-person-circle"></i>
+          }
+
+          @if (isUploadingAvatar()) {
+            <span class="avatar-upload-overlay">
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </span>
+          } @else {
+            <span class="avatar-edit-badge"><i class="bi bi-camera-fill"></i></span>
+          }
+
+        </button>
+
+        <input
+          #avatarInput
+          type="file"
+          accept="image/jpeg,image/png"
+          class="visually-hidden"
+          (change)="onAvatarSelected($event)">
+
+        <div class="profile-identity-info">
+          <span class="profile-identity-email">{{ email }}</span>
+          <span class="profile-identity-role">{{ roleKey() | t }}</span>
+        </div>
+      </div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+        <div class="row g-3 mb-3">
+
+          <div class="col-sm-6">
+
+            <div class="form-floating">
+
+              <input
+                type="text"
+                class="form-control"
+                id="firstName"
+                [placeholder]="'profile.firstNamePlaceholder' | t"
+                formControlName="firstName"
+                [class.is-invalid]="firstName.invalid && (firstName.touched || submitted)">
+
+              <label for="firstName"><i class="bi bi-person"></i> {{ 'profile.firstNameLabel' | t }}</label>
+
+            </div>
+
+            @if (firstName.invalid && (firstName.touched || submitted)) {
+              <div class="field-error">
+                @if (firstName.errors?.['required']) {
+                  <span>{{ 'profile.firstNameRequired' | t }}</span>
+                } @else if (firstName.errors?.['minlength']) {
+                  <span>{{ 'profile.minLength2' | t }}</span>
+                }
+              </div>
+            }
+
+          </div>
+
+          <div class="col-sm-6">
+
+            <div class="form-floating">
+
+              <input
+                type="text"
+                class="form-control"
+                id="lastName"
+                [placeholder]="'profile.lastNamePlaceholder' | t"
+                formControlName="lastName"
+                [class.is-invalid]="lastName.invalid && (lastName.touched || submitted)">
+
+              <label for="lastName"><i class="bi bi-person"></i> {{ 'profile.lastNameLabel' | t }}</label>
+
+            </div>
+
+            @if (lastName.invalid && (lastName.touched || submitted)) {
+              <div class="field-error">
+                @if (lastName.errors?.['required']) {
+                  <span>{{ 'profile.lastNameRequired' | t }}</span>
+                } @else if (lastName.errors?.['minlength']) {
+                  <span>{{ 'profile.minLength2' | t }}</span>
+                }
+              </div>
+            }
+
+          </div>
+
+        </div>
+
+        <div class="form-floating mb-3">
+
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            [value]="email"
+            disabled
+            readonly>
+
+          <label for="email"><i class="bi bi-envelope"></i> {{ 'profile.emailLabel' | t }}</label>
+
+        </div>
+
+        <div class="form-floating mb-3">
+
+          <input
+            type="tel"
+            class="form-control"
+            id="phoneNumber"
+            [placeholder]="'profile.phonePlaceholder' | t"
+            formControlName="phoneNumber"
+            [class.is-invalid]="phoneNumber.invalid && (phoneNumber.touched || submitted)">
+
+          <label for="phoneNumber"><i class="bi bi-telephone"></i> {{ 'profile.phoneLabel' | t }}</label>
+
+          @if (phoneNumber.invalid && (phoneNumber.touched || submitted)) {
+            <div class="field-error">
+              @if (phoneNumber.errors?.['required']) {
+                <span>{{ 'profile.phoneRequired' | t }}</span>
+              } @else if (phoneNumber.errors?.['pattern']) {
+                <span>{{ 'profile.phoneInvalid' | t }}</span>
+              }
+            </div>
+          }
+
+        </div>
+
+        <div class="form-floating mb-4">
+
+          <input
+            type="text"
+            class="form-control"
+            id="role"
+            [value]="roleKey() | t"
+            disabled
+            readonly>
+
+          <label for="role"><i class="bi bi-shield-check"></i> {{ 'profile.roleLabel' | t }}</label>
+
+        </div>
+
+        <div class="d-grid">
+          <button type="submit" class="btn btn-primary btn-lg" [disabled]="isSaving()">
+            @if (isSaving()) {
+              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              <span>{{ 'profile.saving' | t }}</span>
+            } @else {
+              <i class="bi bi-check2-circle"></i>
+              <span>{{ 'profile.save' | t }}</span>
+            }
+          </button>
+        </div>
+
+      </form>
+
+    }
+
+  </div>
+
+</div>

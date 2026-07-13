@@ -1,0 +1,250 @@
+<div class="page-header">
+  <div>
+    <h1><i class="bi bi-people"></i> {{ 'couriers.title' | t }}</h1>
+    <p class="subtitle">{{ 'couriers.subtitle' | t }}</p>
+  </div>
+  <button type="button" class="btn btn-primary" (click)="openAddModal()">
+    <i class="bi bi-person-plus"></i> {{ 'couriers.addCourier' | t }}
+  </button>
+</div>
+
+@if (actionSuccess()) {
+  <div class="order-alert order-alert-success" role="alert">
+    <i class="bi bi-check-circle"></i>
+    <span>{{ actionSuccess() }}</span>
+  </div>
+}
+
+@if (actionError()) {
+  <div class="order-alert order-alert-error" role="alert">
+    <i class="bi bi-exclamation-triangle"></i>
+    <span>{{ actionError() }}</span>
+  </div>
+}
+
+<div class="filter-tabs" role="tablist" aria-label="Courier status filter">
+  @for (filter of filters; track filter.value) {
+    <button
+      type="button"
+      class="filter-tab"
+      role="tab"
+      [class.active]="activeFilter === filter.value"
+      [attr.aria-selected]="activeFilter === filter.value"
+      (click)="setFilter(filter.value)">
+      {{ filter.labelKey | t }}
+    </button>
+  }
+</div>
+
+<div class="card shadow">
+
+  <div class="card-body">
+
+    @if (loading) {
+
+      <div class="loading-state">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{ 'couriers.loading' | t }}
+      </div>
+
+
+    } @else if (errorMessage()) {
+
+      <div class="order-alert order-alert-error" role="alert">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+
+    } @else if (couriers.length === 0) {
+
+      <div class="empty-state text-center">
+        <i class="bi bi-people"></i>
+        <p>{{ 'couriers.empty' | t }}</p>
+      </div>
+
+    } @else {
+
+      <div class="table-responsive">
+
+        <table class="table table-hover align-middle">
+
+          <thead>
+          <tr>
+            <th>{{ 'couriers.colId' | t }}</th>
+            <th>{{ 'couriers.colName' | t }}</th>
+            <th>{{ 'couriers.colStatus' | t }}</th>
+            <th>{{ 'couriers.colRating' | t }}</th>
+            <th>{{ 'couriers.colActions' | t }}</th>
+          </tr>
+          </thead>
+
+          <tbody>
+          @for (courier of couriers; track courier.id) {
+            <tr>
+              <td>#{{ courier.id }}</td>
+              <td>
+                <div class="courier-name-cell">
+                  <span class="courier-avatar">
+                    @if (showAvatarImage(courier)) {
+                      <img
+                        [src]="courier.photoUrl"
+                        [alt]="courier.name"
+                        (error)="onAvatarError(courier.id)">
+                    } @else {
+                      <span class="courier-avatar-initials">{{ initialsFor(courier.name) }}</span>
+                    }
+                  </span>
+                  <span>{{ courier.name }}</span>
+                </div>
+              </td>
+              <td><span class="status-badge" [attr.data-status]="courier.status">{{ courierStatusKey(courier.status) | t }}</span></td>
+              <td>
+                @if (courier.ratingCount > 0) {
+                  <span class="rating-chip">
+                    <i class="bi bi-star-fill"></i> {{ courier.averageRating | number:'1.1-1' }}
+                    <span class="rating-count">({{ courier.ratingCount }})</span>
+                  </span>
+                } @else {
+                  <span class="text-muted">{{ 'couriers.noRatingsYet' | t }}</span>
+                }
+              </td>
+              <td>
+                @if (courier.status === 'AVAILABLE') {
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    [disabled]="pendingCourierId === courier.id"
+                    (click)="setCourierStatus(courier, 'OFFLINE')">
+                    @if (pendingCourierId === courier.id) {
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    } @else {
+                      <i class="bi bi-power"></i>
+                    }
+                    {{ 'couriers.setOffline' | t }}
+                  </button>
+                } @else if (courier.status === 'OFFLINE') {
+                  <button
+                    type="button"
+                    class="btn btn-success btn-sm"
+                    [disabled]="pendingCourierId === courier.id"
+                    (click)="setCourierStatus(courier, 'AVAILABLE')">
+                    @if (pendingCourierId === courier.id) {
+                      <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                    } @else {
+                      <i class="bi bi-power"></i>
+                    }
+                    {{ 'couriers.setAvailable' | t }}
+                  </button>
+                } @else {
+                  <span class="on-delivery-text"><i class="bi bi-truck"></i> {{ 'couriers.onDelivery' | t }}</span>
+                }
+              </td>
+            </tr>
+          }
+          </tbody>
+
+        </table>
+
+      </div>
+
+    }
+
+  </div>
+
+</div>
+
+@if (showAddModal) {
+
+  <div class="modal-backdrop-custom" (click)="closeAddModal()">
+
+    <div class="modal-panel card shadow" (click)="$event.stopPropagation()">
+
+      <div class="card-body">
+
+        <div class="modal-header-custom">
+          <h5><i class="bi bi-person-plus"></i> {{ 'couriers.addModalTitle' | t }}</h5>
+          <button type="button" class="modal-close-btn" (click)="closeAddModal()" [attr.aria-label]="'common.close' | t">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        @if (addError()) {
+          <div class="order-alert order-alert-error" role="alert">
+            <i class="bi bi-exclamation-triangle"></i>
+            <span>{{ addError() }}</span>
+          </div>
+        }
+
+        <form [formGroup]="addForm" (ngSubmit)="submitAddCourier()" novalidate>
+
+          <div class="form-floating mb-3">
+
+            <input
+              type="text"
+              class="form-control"
+              id="courierName"
+              [placeholder]="'couriers.courierNamePlaceholder' | t"
+              maxlength="100"
+              formControlName="name"
+              [class.is-invalid]="name.invalid && (name.touched || addSubmitted)">
+
+            <label for="courierName"><i class="bi bi-person"></i> {{ 'couriers.courierNameLabel' | t }}</label>
+
+            @if (name.invalid && (name.touched || addSubmitted)) {
+              <div class="field-error">
+                @if (name.errors?.['required']) {
+                  <span>{{ 'couriers.courierNameRequired' | t }}</span>
+                } @else if (name.errors?.['maxlength']) {
+                  <span>{{ 'couriers.courierNameMaxLength' | t }}</span>
+                }
+              </div>
+            }
+
+          </div>
+
+          <div class="form-floating mb-3">
+
+            <input
+              type="url"
+              class="form-control"
+              id="courierPhotoUrl"
+              [placeholder]="'couriers.photoUrlPlaceholder' | t"
+              maxlength="500"
+              formControlName="photoUrl"
+              [class.is-invalid]="photoUrl.invalid && (photoUrl.touched || addSubmitted)">
+
+            <label for="courierPhotoUrl"><i class="bi bi-image"></i> {{ 'couriers.photoUrlLabel' | t }}</label>
+
+            @if (photoUrl.invalid && (photoUrl.touched || addSubmitted)) {
+              <div class="field-error">
+                @if (photoUrl.errors?.['maxlength']) {
+                  <span>{{ 'couriers.photoUrlMaxLength' | t }}</span>
+                } @else if (photoUrl.errors?.['photoUrlProtocol']) {
+                  <span>{{ 'couriers.photoUrlInvalid' | t }}</span>
+                }
+              </div>
+            }
+
+          </div>
+
+          <div class="modal-actions">
+            <button type="button" class="btn btn-outline-secondary" (click)="closeAddModal()">{{ 'common.cancel' | t }}</button>
+            <button type="submit" class="btn btn-primary" [disabled]="addSubmitting">
+              @if (addSubmitting) {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              } @else {
+                <i class="bi bi-check2"></i>
+              }
+              {{ 'couriers.submitAdd' | t }}
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+}

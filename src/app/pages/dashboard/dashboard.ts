@@ -1,52 +1,77 @@
 import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { OrderService, Order } from '../../services/order.service';
+import { TranslatePipe } from '../../i18n/translate.pipe';
+import { orderStatusKey } from '../../i18n/status-labels';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, TranslatePipe],
   templateUrl: './dashboard.html',
-  styleUrls: ['./dashboard.css']
+  styleUrl: './dashboard.css',
 })
 export class Dashboard {
-
-  private http = inject(HttpClient);
+  private orderService = inject(OrderService);
   private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
+
+  readonly orderStatusKey = orderStatusKey;
 
   totalOrders = 0;
   deliveredOrders = 0;
   cancelledOrders = 0;
   createdOrders = 0;
+  inProgressOrders = 0;
+
+  /** Most recent orders, derived from the same already-fetched list used for the counts
+   *  above - no separate request, no invented data. Ordered by id (descending) since Order
+   *  carries no timestamp field to sort by. */
+  recentOrders: Order[] = [];
+
+  /** Reflects the real outcome of the last statistics fetch - not a simulated/fake signal.
+   *  `lastUpdated` is the client-side moment that request last succeeded. */
+  connectionOk = true;
+  lastUpdated: Date | null = null;
 
   constructor() {
     this.loadStatistics();
   }
 
+  goToOrders(status?: 'CREATED' | 'IN_PROGRESS' | 'DELIVERED' | 'CANCELLED') {
+    this.router.navigate(['/orders'], status ? { queryParams: { status } } : undefined);
+  }
+
   loadStatistics() {
+    this.orderService.getOrders().subscribe({
+      next: (data) => {
+        const orders = data.content;
 
-    this.http.get<any>('http://localhost:8081/orders')
-      .subscribe({
-        next: (data) => {
+        this.totalOrders = orders.length;
 
-          const orders = data.content;
+        this.deliveredOrders = orders.filter((o) => o.status === 'DELIVERED').length;
 
-          this.totalOrders = orders.length;
+        this.cancelledOrders = orders.filter((o) => o.status === 'CANCELLED').length;
 
-          this.deliveredOrders =
-            orders.filter((o: any) => o.status === 'DELIVERED').length;
+        this.createdOrders = orders.filter((o) => o.status === 'CREATED').length;
 
-          this.cancelledOrders =
-            orders.filter((o: any) => o.status === 'CANCELLED').length;
+        this.inProgressOrders = orders.filter((o) =>
+          o.status === 'IN_PROGRESS' || o.status === 'ASSIGNED'
+        ).length;
 
-          this.createdOrders =
-            orders.filter((o: any) => o.status === 'CREATED').length;
+        this.recentOrders = [...orders].sort((a, b) => b.id - a.id).slice(0, 5);
 
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error(err);
-        }
-      });
+        this.connectionOk = true;
+        this.lastUpdated = new Date();
+
+        this.cdr.detectChanges();
+      },
+
+      error: () => {
+        this.connectionOk = false;
+        this.cdr.detectChanges();
+      },
+    });
   }
 }

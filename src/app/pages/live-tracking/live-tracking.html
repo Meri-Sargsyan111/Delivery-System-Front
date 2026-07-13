@@ -1,3 +1,63 @@
-<h2>🚚 Live Courier Tracking</h2>
+<div class="page-header">
+  <h2><i class="bi bi-geo-alt"></i> {{ 'liveTracking.title' | t }}</h2>
+  <p class="subtitle">{{ 'liveTracking.subtitle' | t }}</p>
+</div>
 
-<div id="map"></div>
+<div class="live-tracking-layout">
+
+  <div class="map-container">
+    @if (mapsReady()) {
+      <google-map
+        [height]="mapHeight()"
+        width="100%"
+        [center]="center()"
+        [zoom]="zoom"
+        [options]="mapOptions">
+        <map-marker
+          [position]="markerPosition()"
+          [options]="markerOptions">
+        </map-marker>
+      </google-map>
+    } @else {
+      <div class="map-loading">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span>{{ 'liveTracking.loadingMap' | t }}</span>
+      </div>
+    }
+  </div>
+
+  <aside class="tracking-info-panel">
+
+    <div class="panel-header">
+      <span class="connection-dot" [class.connected]="isConnected"></span>
+      <span class="panel-title">{{ (isConnected ? 'liveTracking.live' : 'liveTracking.waitingForLocation') | t }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label"><i class="bi bi-hash"></i> {{ 'liveTracking.orderId' | t }}</span>
+      <span class="info-value">{{ currentOrderId ?? '—' }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label"><i class="bi bi-compass"></i> {{ 'liveTracking.latitude' | t }}</span>
+      <span class="info-value">{{ currentLat !== null ? currentLat.toFixed(5) : '—' }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label"><i class="bi bi-compass"></i> {{ 'liveTracking.longitude' | t }}</span>
+      <span class="info-value">{{ currentLng !== null ? currentLng.toFixed(5) : '—' }}</span>
+    </div>
+
+    <div class="info-row">
+      <span class="info-label"><i class="bi bi-clock-history"></i> {{ 'liveTracking.lastUpdate' | t }}</span>
+      <span class="info-value">{{ lastUpdate ? lastUpdate.toLocaleTimeString() : '—' }}</span>
+    </div>
+
+    <div class="panel-footer">
+      <i class="bi bi-truck"></i>
+      <span>{{ 'liveTracking.footerHint' | t }}</span>
+    </div>
+
+  </aside>
+
+</div>

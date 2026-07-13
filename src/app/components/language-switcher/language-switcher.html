@@ -1,0 +1,13 @@
+<div class="lang-switcher" role="radiogroup" aria-label="Language">
+  @for (option of languages; track option.code) {
+    <button
+      type="button"
+      class="lang-option"
+      role="radio"
+      [attr.aria-checked]="activeLang() === option.code"
+      [class.active]="activeLang() === option.code"
+      (click)="selectLang(option.code)">
+      {{ option.nativeLabel }}
+    </button>
+  }
+</div>

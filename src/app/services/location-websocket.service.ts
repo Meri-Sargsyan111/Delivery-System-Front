@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Client, IMessage } from '@stomp/stompjs';
+import { environment } from '../../environments/environment';
 
 export interface CourierLocation {
   orderId: number;
@@ -17,12 +18,10 @@ export class LocationWebSocketService {
   connect(onLocation: (location: CourierLocation) => void): void {
 
     this.client = new Client({
-      brokerURL: 'ws://localhost:8082/ws',
+      brokerURL: `${environment.wsBase}/ws-location`,
       reconnectDelay: 5000,
 
       onConnect: () => {
-
-        console.log('🚚 Location WebSocket Connected');
 
         this.client.subscribe('/topic/location', (message: IMessage) => {
 

@@ -1,0 +1,16 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: frontend
+    restart: unless-stopped
+    networks:
+      - delivery-system_default
+
+# Joins the backend's existing Docker network (delivery-system_default) instead of
+# publishing a host port - Caddy (already on that network, already owning host ports
+# 80/443) reverse-proxies to this container by name. See /opt/delivery-system/Caddyfile.
+networks:
+  delivery-system_default:
+    external: true

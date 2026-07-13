@@ -1,73 +1,142 @@
-import { AfterViewInit, Component, OnDestroy } from '@angular/core';
-import * as L from 'leaflet';
+import { Component, OnDestroy, OnInit, HostListener, ViewChild, signal } from '@angular/core';
+import { GoogleMap, MapMarker } from '@angular/google-maps';
 import {
   CourierLocation,
   LocationWebSocketService
 } from '../../services/location-websocket.service';
+import { GoogleMapsLoaderService } from '../../services/google-maps-loader.service';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
-// Fix Leaflet marker icons
-delete (L.Icon.Default.prototype as any)._getIconUrl;
+const ARMENIA_CENTER: google.maps.LatLngLiteral = { lat: 40.1772, lng: 44.5035 };
+const MARKER_ANIMATION_DURATION_MS = 800;
+const MOBILE_BREAKPOINT_PX = 900;
 
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png'
-});
+const DARK_MAP_STYLE: google.maps.MapTypeStyle[] = [
+  { elementType: 'geometry', stylers: [{ color: '#1d2330' }] },
+  { elementType: 'labels.text.stroke', stylers: [{ color: '#1d2330' }] },
+  { elementType: 'labels.text.fill', stylers: [{ color: '#8a93a8' }] },
+  { featureType: 'administrative', elementType: 'geometry', stylers: [{ color: '#3a4257' }] },
+  { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#2a3145' }] },
+  { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#1d2330' }] },
+  { featureType: 'road.highway', elementType: 'geometry', stylers: [{ color: '#3a4257' }] },
+  { featureType: 'poi', elementType: 'geometry', stylers: [{ color: '#232939' }] },
+  { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#131722' }] },
+  { featureType: 'transit', elementType: 'geometry', stylers: [{ color: '#232939' }] }
+];
 
 @Component({
   selector: 'app-live-tracking',
   standalone: true,
+  imports: [GoogleMap, MapMarker, TranslatePipe],
   templateUrl: './live-tracking.html',
-  styleUrls: ['./live-tracking.css']
+  styleUrl: './live-tracking.css'
 })
-export class LiveTracking implements AfterViewInit, OnDestroy {
+export class LiveTracking implements OnInit, OnDestroy {
 
-  private map!: L.Map;
-  private courierMarker!: L.Marker;
+  @ViewChild(GoogleMap) private googleMap?: GoogleMap;
+
+  mapsReady = signal(false);
+  center = signal<google.maps.LatLngLiteral>(ARMENIA_CENTER);
+  markerPosition = signal<google.maps.LatLngLiteral>(ARMENIA_CENTER);
+  mapHeight = signal(this.computeMapHeight());
+
+  readonly zoom = 14;
+
+  readonly mapOptions: google.maps.MapOptions = {
+    disableDefaultUI: false,
+    streetViewControl: false,
+    mapTypeControl: false,
+    fullscreenControl: false,
+    styles: DARK_MAP_STYLE
+  };
+
+  readonly markerOptions: google.maps.MarkerOptions = {
+    title: 'Courier'
+  };
+
+  currentOrderId: number | null = null;
+  currentLat: number | null = null;
+  currentLng: number | null = null;
+  isConnected = false;
+  lastUpdate: Date | null = null;
+
+  private animationFrameId: number | null = null;
 
   constructor(
-    private locationWebSocketService: LocationWebSocketService
+    private locationWebSocketService: LocationWebSocketService,
+    private googleMapsLoader: GoogleMapsLoaderService
   ) {}
 
-  ngAfterViewInit(): void {
+  ngOnInit(): void {
+    this.googleMapsLoader.load().then(() => {
 
-    this.map = L.map('map').setView([40.1772, 44.5035], 14);
+      this.mapsReady.set(true);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap contributors'
-    }).addTo(this.map);
+      this.locationWebSocketService.connect((location: CourierLocation) => {
+        this.handleLocation(location);
+      });
 
-    this.courierMarker = L.marker([40.1772, 44.5035])
-      .addTo(this.map)
-      .bindPopup('🚚 Courier')
-      .openPopup();
-
-    this.locationWebSocketService.connect((location: CourierLocation) => {
-
-      console.log('📍 Location:', location);
-
-      this.moveCourier(
-        location.latitude,
-        location.longitude
-      );
-
-    });
+    }).catch(err => console.error('Failed to load Google Maps:', err));
   }
 
-  private moveCourier(latitude: number, longitude: number): void {
+  @HostListener('window:resize')
+  onResize(): void {
+    this.mapHeight.set(this.computeMapHeight());
+  }
 
-    console.log('Moving marker to:', latitude, longitude);
+  private computeMapHeight(): string {
+    return typeof window !== 'undefined' && window.innerWidth <= MOBILE_BREAKPOINT_PX ? '420px' : '600px';
+  }
 
-    this.courierMarker.setLatLng([latitude, longitude]);
+  private handleLocation(location: CourierLocation): void {
 
-    this.map.flyTo([latitude, longitude], this.map.getZoom(), {
-      animate: true,
-      duration: 1
-    });
+    const target: google.maps.LatLngLiteral = { lat: location.latitude, lng: location.longitude };
 
+    this.animateMarkerTo(target);
+    this.googleMap?.panTo(target);
+
+    this.currentOrderId = location.orderId;
+    this.currentLat = location.latitude;
+    this.currentLng = location.longitude;
+    this.isConnected = true;
+    this.lastUpdate = new Date();
+  }
+
+  private animateMarkerTo(target: google.maps.LatLngLiteral): void {
+
+    const start = this.markerPosition();
+    const startTime = performance.now();
+
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
+
+    const step = (now: number) => {
+
+      const progress = Math.min((now - startTime) / MARKER_ANIMATION_DURATION_MS, 1);
+
+      this.markerPosition.set({
+        lat: start.lat + (target.lat - start.lat) * progress,
+        lng: start.lng + (target.lng - start.lng) * progress
+      });
+
+      if (progress < 1) {
+        this.animationFrameId = requestAnimationFrame(step);
+      } else {
+        this.animationFrameId = null;
+      }
+    };
+
+    this.animationFrameId = requestAnimationFrame(step);
   }
 
   ngOnDestroy(): void {
+
     this.locationWebSocketService.disconnect();
+
+    if (this.animationFrameId !== null) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
   }
+
 }

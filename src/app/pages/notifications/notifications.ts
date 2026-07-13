@@ -1,18 +1,17 @@
 import { Component, inject, ChangeDetectorRef, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
 import { WebSocketService } from '../../services/websocket.service';
+import { NotificationService } from '../../services/notification.service';
+import { TranslatePipe } from '../../i18n/translate.pipe';
 
 @Component({
   selector: 'app-notifications',
   standalone: true,
-  imports: [CommonModule],
+  imports: [TranslatePipe],
   templateUrl: './notifications.html',
-  styleUrls: ['./notifications.css']
+  styleUrl: './notifications.css',
 })
 export class Notifications implements OnDestroy {
-
-  private http = inject(HttpClient);
+  private notificationService = inject(NotificationService);
   private cdr = inject(ChangeDetectorRef);
   private webSocketService = inject(WebSocketService);
 
@@ -22,31 +21,23 @@ export class Notifications implements OnDestroy {
     this.loadNotifications();
 
     this.webSocketService.connect((message: string) => {
-
       this.notifications.unshift(message);
 
       this.cdr.detectChanges();
-
     });
   }
 
   loadNotifications() {
+    this.notificationService.getNotifications().subscribe({
+      next: (data) => {
+        this.notifications = data.content ?? [];
 
-    this.http
-      .get<any>('http://localhost:8080/notifications')
-      .subscribe({
-        next: (data) => {
-
-          console.log('NOTIFICATIONS DATA:', data);
-
-          this.notifications = [...data.content];
-
-          this.cdr.detectChanges();
-        },
-        error: (err) => {
-          console.error(err);
-        }
-      });
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Notification load failed:', err);
+      },
+    });
   }
 
   ngOnDestroy(): void {

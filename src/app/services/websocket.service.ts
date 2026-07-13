@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Client, IMessage } from '@stomp/stompjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -11,12 +12,10 @@ export class WebSocketService {
   connect(onMessage: (message: string) => void) {
 
     this.client = new Client({
-      brokerURL: 'ws://localhost:8080/ws',
+      brokerURL: `${environment.wsBase}/ws`,
       reconnectDelay: 5000,
 
       onConnect: () => {
-
-        console.log('✅ WebSocket Connected');
 
         this.client.subscribe('/topic/notifications', (message: IMessage) => {
           onMessage(message.body);

@@ -1,33 +1,56 @@
-<h1>🚚 Tracking</h1>
+<div class="page-header">
+  <h1><i class="bi bi-search"></i> {{ 'tracking.title' | t }}</h1>
+  <p class="subtitle">{{ 'tracking.subtitle' | t }}</p>
+</div>
 
 <div class="tracking-container">
 
-  <input
-    type="number"
-    placeholder="Enter Order ID"
-    [(ngModel)]="orderId">
+  <div class="search-card">
+    <div class="input-group">
+      <span class="input-group-text"><i class="bi bi-hash"></i></span>
+      <input
+        type="number"
+        class="form-control"
+        [placeholder]="'tracking.orderIdPlaceholder' | t"
+        [(ngModel)]="orderId">
 
-  <button (click)="trackOrder()">
-    Track Order
-  </button>
+      <button class="btn btn-primary" (click)="trackOrder()">
+        <i class="bi bi-search"></i> {{ 'tracking.trackOrder' | t }}
+      </button>
+    </div>
+  </div>
 
-  <hr>
+  <div class="results-header">
+    <span>{{ 'tracking.totalEvents' | t: { count: events.length } }}</span>
+  </div>
 
-  <p>Total Events: {{ events.length }}</p>
+  <div class="timeline">
 
-  @for (event of events; track event.id) {
+    @for (event of events; track event.id) {
 
-  <div class="result">
+    <div class="timeline-item">
 
-    <p><b>Order ID:</b> {{ event.orderId }}</p>
+      <div class="timeline-dot" [attr.data-status]="event.status">
+        <i class="bi bi-truck"></i>
+      </div>
 
-    <p><b>Status:</b> {{ event.status }}</p>
+      <div class="timeline-content">
+        <div class="timeline-status" [attr.data-status]="event.status">{{ orderStatusKey(event.status) | t }}</div>
+        <p><span class="label">{{ 'tracking.orderId' | t }}</span> {{ event.orderId }}</p>
+        <p><span class="label">{{ 'tracking.courier' | t }}</span> {{ event.courierName }}</p>
+      </div>
 
-    <p><b>Courier:</b> {{ event.courierName }}</p>
+    </div>
+
+    } @empty {
+
+    <div class="empty-state">
+      <i class="bi bi-inbox"></i>
+      <p>{{ 'tracking.noEvents' | t }}</p>
+    </div>
+
+    }
 
   </div>
 
-  }
-
 </div>
-

@@ -1,37 +1,107 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow">
-  <div class="container-fluid">
+<aside class="sidebar" [class.collapsed]="isCollapsed">
 
-    <a class="navbar-brand fw-bold" routerLink="/">
-      🚚 Delivery System
+  <div class="sidebar-brand">
+    <a class="brand-link" routerLink="/">
+      <span class="brand-icon"><i class="bi bi-truck"></i></span>
+      <span class="brand-text">Delivery<b>OS</b></span>
     </a>
 
-    <div class="navbar-nav ms-auto">
+    <button type="button" class="collapse-toggle" (click)="toggleSidebar()" [attr.aria-label]="'nav.toggleSidebar' | t">
+      <i class="bi" [class.bi-chevron-left]="!isCollapsed" [class.bi-chevron-right]="isCollapsed"></i>
+    </button>
+  </div>
 
-      <a class="nav-link text-white" routerLink="/">
-        🏠 Dashboard
+  <nav class="sidebar-nav">
+
+    <a class="nav-item" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <span class="nav-icon"><i class="bi bi-grid-1x2"></i></span>
+      <span class="nav-label">{{ 'nav.dashboard' | t }}</span>
+    </a>
+
+    <div class="nav-group">
+      <span class="nav-group-label">{{ 'nav.groupOperations' | t }}</span>
+
+      <a class="nav-item" routerLink="/orders" routerLinkActive="active">
+        <span class="nav-icon"><i class="bi bi-box-seam"></i></span>
+        <span class="nav-label">{{ 'nav.orders' | t }}</span>
       </a>
 
-      <a class="nav-link text-white" routerLink="/orders">
-        📦 Orders
+      @if (showCreateOrder()) {
+        <a class="nav-item" routerLink="/create-order" routerLinkActive="active">
+          <span class="nav-icon"><i class="bi bi-plus-circle"></i></span>
+          <span class="nav-label">{{ 'nav.createOrder' | t }}</span>
+        </a>
+      }
+
+      <a class="nav-item" routerLink="/tracking" routerLinkActive="active">
+        <span class="nav-icon"><i class="bi bi-search"></i></span>
+        <span class="nav-label">{{ 'nav.tracking' | t }}</span>
       </a>
 
-      <a class="nav-link text-white" routerLink="/create-order">
-        ➕ Create Order
+      <a class="nav-item" routerLink="/live-tracking" routerLinkActive="active">
+        <span class="nav-icon"><i class="bi bi-geo-alt"></i></span>
+        <span class="nav-label">{{ 'nav.liveTracking' | t }}</span>
       </a>
 
-      <a class="nav-link text-white" routerLink="/tracking">
-        🚚 Tracking
+      <a class="nav-item" routerLink="/notifications" routerLinkActive="active">
+        <span class="nav-icon"><i class="bi bi-bell"></i></span>
+        <span class="nav-label">{{ 'nav.notifications' | t }}</span>
       </a>
-
-      <a class="nav-link text-white" routerLink="/notifications">
-        🔔 Notifications
-      </a>
-
-      <a class="nav-link text-white" routerLink="/live-tracking">
-        📍 Live Tracking
-      </a>
-
     </div>
 
+    @if (showCouriers()) {
+      <div class="nav-group">
+        <span class="nav-group-label">{{ 'nav.groupFleet' | t }}</span>
+
+        <a class="nav-item" routerLink="/couriers" routerLinkActive="active">
+          <span class="nav-icon"><i class="bi bi-people"></i></span>
+          <span class="nav-label">{{ 'nav.couriers' | t }}</span>
+        </a>
+      </div>
+    }
+
+    <div class="nav-group">
+      <span class="nav-group-label">{{ 'nav.groupAccount' | t }}</span>
+
+      <a class="nav-item" routerLink="/profile" routerLinkActive="active">
+        <span class="nav-icon"><i class="bi bi-person-badge"></i></span>
+        <span class="nav-label">{{ 'nav.profile' | t }}</span>
+      </a>
+    </div>
+
+  </nav>
+
+  <div class="sidebar-footer">
+
+    <div class="sidebar-lang">
+      <app-language-switcher></app-language-switcher>
+    </div>
+
+    @if (currentUser(); as user) {
+      <div class="sidebar-profile">
+        <span class="profile-avatar"><i class="bi bi-person-circle"></i></span>
+        <div class="profile-info">
+          <span class="profile-name">{{ user.email }}</span>
+          <span class="profile-role">{{ roleKey() | t }}</span>
+        </div>
+        <button type="button" class="profile-logout" (click)="logout()" [attr.aria-label]="'nav.logout' | t" [title]="'nav.logout' | t">
+          <i class="bi bi-box-arrow-right"></i>
+        </button>
+      </div>
+    } @else {
+      <div class="sidebar-auth">
+        <a class="auth-btn auth-btn-outline" routerLink="/login" routerLinkActive="active" [title]="'nav.login' | t">
+          <i class="bi bi-box-arrow-in-right"></i>
+          <span class="nav-label">{{ 'nav.login' | t }}</span>
+        </a>
+
+        <a class="auth-btn auth-btn-primary" routerLink="/register" routerLinkActive="active" [title]="'nav.register' | t">
+          <i class="bi bi-person-plus"></i>
+          <span class="nav-label">{{ 'nav.register' | t }}</span>
+        </a>
+      </div>
+    }
+
   </div>
-</nav>
+
+</aside>

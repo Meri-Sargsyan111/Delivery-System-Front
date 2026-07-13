@@ -1,0 +1,222 @@
+.splash-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 30%, #131a33 0%, #0b1020 55%, #05070f 100%);
+  opacity: 1;
+  transition: opacity 650ms ease;
+}
+
+.splash-root.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+  opacity: 1;
+  transition: opacity 550ms ease;
+}
+
+.splash-canvas.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.splash-stage {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(24px, 6vh, 56px);
+}
+
+.splash-title {
+  margin: 0;
+  text-align: center;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: 0.04em;
+  color: #f8fafc;
+  text-shadow:
+    0 0 10px rgba(167, 139, 250, 0.9),
+    0 0 28px rgba(139, 92, 246, 0.65),
+    0 0 64px rgba(99, 102, 241, 0.45),
+    0 0 110px rgba(34, 211, 238, 0.25);
+  opacity: 0;
+  transform: scale(0.9);
+  transition: opacity 900ms cubic-bezier(.16, 1, .3, 1), transform 900ms cubic-bezier(.16, 1, .3, 1);
+}
+
+.splash-title.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.splash-title.fade-exit {
+  opacity: 0;
+  transform: scale(1.03);
+  transition: opacity 700ms ease, transform 700ms ease;
+}
+
+.splash-title .line {
+  display: block;
+  font-size: clamp(2rem, 8vw, 4.5rem);
+}
+
+.splash-title .line + .line {
+  font-size: clamp(1.4rem, 5.5vw, 3rem);
+  opacity: 0.92;
+}
+
+.delivery-stage {
+  position: relative;
+  width: min(90vw, 480px);
+  height: 64px;
+}
+
+.package-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.4);
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  opacity: 0;
+  filter: drop-shadow(0 0 14px rgba(139, 92, 246, 0.75));
+  transition: opacity 500ms ease, transform 500ms cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.package-icon.show {
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.package-icon.fade-exit {
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.route-line {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 140px;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, rgba(167, 139, 250, 0.95), rgba(103, 232, 249, 0.95));
+  box-shadow: 0 0 12px rgba(139, 92, 246, 0.85), 0 0 26px rgba(34, 211, 238, 0.5);
+  transform: translateY(-50%) scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  transition: transform 650ms cubic-bezier(.16, 1, .3, 1), opacity 300ms ease;
+}
+
+.route-line.grow {
+  opacity: 1;
+  transform: translateY(-50%) scaleX(1);
+}
+
+.route-line.fade-exit {
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.truck-wrap {
+  position: absolute;
+  top: 50%;
+  left: calc(50% + 150px);
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transition: opacity 400ms ease;
+}
+
+.truck-wrap.drive {
+  opacity: 1;
+  animation: truck-drive 1450ms 280ms cubic-bezier(.45, .05, .55, .95) forwards;
+}
+
+.truck-icon {
+  display: inline-block;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  filter: drop-shadow(0 0 10px rgba(34, 211, 238, 0.6));
+}
+
+.truck-wrap.drive .truck-icon {
+  animation: truck-bounce 380ms ease-in-out infinite;
+}
+
+.particles {
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+.particle {
+  position: absolute;
+  right: 100%;
+  width: 6px;
+  height: 6px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(167, 139, 250, 0.95), rgba(34, 211, 238, 0.5));
+  opacity: 0;
+  animation: particle-trail 900ms ease-out infinite;
+  animation-play-state: paused;
+}
+
+.truck-wrap.drive .particle {
+  animation-play-state: running;
+}
+
+@keyframes truck-drive {
+  0% {
+    transform: translate(-50%, -50%) translateX(0);
+  }
+  100% {
+    transform: translate(-50%, -50%) translateX(72vw);
+  }
+}
+
+@keyframes truck-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes particle-trail {
+  0% {
+    opacity: 0.9;
+    transform: translateX(0) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-26px) scale(0.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .splash-root,
+  .splash-title,
+  .splash-canvas,
+  .package-icon,
+  .route-line,
+  .truck-wrap,
+  .truck-wrap.drive .truck-icon,
+  .particle {
+    transition-duration: 200ms !important;
+    animation-duration: 200ms !important;
+  }
+}

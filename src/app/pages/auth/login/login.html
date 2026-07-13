@@ -1,0 +1,118 @@
+<div class="card shadow auth-card">
+
+  <div class="card-body">
+
+    <div class="form-icon"><i class="bi bi-box-arrow-in-right"></i></div>
+
+    <h2 class="text-center mb-1">{{ 'auth.login.welcomeBack' | t }}</h2>
+    <p class="text-center subtitle mb-4">{{ 'auth.login.subtitle' | t }}</p>
+
+    @if (errorMessage()) {
+      <div class="auth-alert" role="alert">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <div class="demo-accounts" role="group" [attr.aria-label]="'auth.login.quickDemoTitle' | t">
+
+      <p class="demo-accounts-title">{{ 'auth.login.quickDemoTitle' | t }}</p>
+
+      <div class="demo-accounts-grid">
+        @for (account of demoAccounts; track account.role) {
+          <button
+            type="button"
+            class="demo-account-card"
+            [title]="account.email"
+            (click)="fillDemoAccount(account)">
+            <span class="demo-account-icon">{{ account.icon }}</span>
+            <span class="demo-account-label">{{ ('roles.' + account.role) | t }}</span>
+          </button>
+        }
+      </div>
+
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="form-floating mb-3">
+
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          placeholder="name@example.com"
+          formControlName="email"
+          [class.is-invalid]="email.invalid && (email.touched || submitted)">
+
+        <label for="email"><i class="bi bi-envelope"></i> {{ 'auth.login.emailLabel' | t }}</label>
+
+        @if (email.invalid && (email.touched || submitted)) {
+          <div class="field-error">
+            @if (email.errors?.['required']) {
+              <span>{{ 'auth.login.emailRequired' | t }}</span>
+            } @else if (email.errors?.['email']) {
+              <span>{{ 'auth.login.emailInvalid' | t }}</span>
+            }
+          </div>
+        }
+
+      </div>
+
+      <div class="form-floating mb-2">
+
+        <input
+          type="password"
+          class="form-control"
+          id="password"
+          [placeholder]="'auth.login.passwordPlaceholder' | t"
+          formControlName="password"
+          [class.is-invalid]="password.invalid && (password.touched || submitted)">
+
+        <label for="password"><i class="bi bi-lock"></i> {{ 'auth.login.passwordLabel' | t }}</label>
+
+        @if (password.invalid && (password.touched || submitted)) {
+          <div class="field-error">
+            @if (password.errors?.['required']) {
+              <span>{{ 'auth.login.passwordRequired' | t }}</span>
+            } @else if (password.errors?.['minlength']) {
+              <span>{{ 'auth.login.passwordMinLength' | t }}</span>
+            }
+          </div>
+        }
+
+      </div>
+
+      <div class="form-options mb-4">
+
+        <label class="remember-me">
+          <input type="checkbox" formControlName="rememberMe">
+          <span>{{ 'auth.login.rememberMe' | t }}</span>
+        </label>
+
+        <a class="forgot-link" href="javascript:void(0)">{{ 'auth.login.forgotPassword' | t }}</a>
+
+      </div>
+
+      <div class="d-grid">
+        <button type="submit" class="btn btn-primary btn-lg" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>{{ 'auth.login.signingIn' | t }}</span>
+          } @else {
+            <i class="bi bi-box-arrow-in-right"></i>
+            <span>{{ 'auth.login.signIn' | t }}</span>
+          }
+        </button>
+      </div>
+
+    </form>
+
+    <p class="switch-link">
+      {{ 'auth.login.noAccount' | t }}
+      <a routerLink="/register">{{ 'auth.login.createOne' | t }}</a>
+    </p>
+
+  </div>
+
+</div>

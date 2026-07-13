@@ -1,0 +1,241 @@
+<div class="card shadow auth-card">
+
+  <div class="card-body">
+
+    <div class="form-icon"><i class="bi bi-person-plus"></i></div>
+
+    <h2 class="text-center mb-1">{{ 'auth.register.title' | t }}</h2>
+    <p class="text-center subtitle mb-4">{{ 'auth.register.subtitle' | t }}</p>
+
+    @if (errorMessage()) {
+      <div class="auth-alert" role="alert">
+        <i class="bi bi-exclamation-triangle"></i>
+        <span>{{ errorMessage() }}</span>
+      </div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+      <div class="row g-3 mb-3">
+
+        <div class="col-sm-6">
+
+          <div class="form-floating">
+
+            <input
+              type="text"
+              class="form-control"
+              id="firstName"
+              [placeholder]="'auth.register.firstNamePlaceholder' | t"
+              formControlName="firstName"
+              [class.is-invalid]="firstName.invalid && (firstName.touched || submitted)">
+
+            <label for="firstName"><i class="bi bi-person"></i> {{ 'auth.register.firstNameLabel' | t }}</label>
+
+          </div>
+
+          @if (firstName.invalid && (firstName.touched || submitted)) {
+            <div class="field-error">
+              @if (firstName.errors?.['required']) {
+                <span>{{ 'auth.register.firstNameRequired' | t }}</span>
+              } @else if (firstName.errors?.['minlength']) {
+                <span>{{ 'auth.register.minLength2' | t }}</span>
+              }
+            </div>
+          }
+
+        </div>
+
+        <div class="col-sm-6">
+
+          <div class="form-floating">
+
+            <input
+              type="text"
+              class="form-control"
+              id="lastName"
+              [placeholder]="'auth.register.lastNamePlaceholder' | t"
+              formControlName="lastName"
+              [class.is-invalid]="lastName.invalid && (lastName.touched || submitted)">
+
+            <label for="lastName"><i class="bi bi-person"></i> {{ 'auth.register.lastNameLabel' | t }}</label>
+
+          </div>
+
+          @if (lastName.invalid && (lastName.touched || submitted)) {
+            <div class="field-error">
+              @if (lastName.errors?.['required']) {
+                <span>{{ 'auth.register.lastNameRequired' | t }}</span>
+              } @else if (lastName.errors?.['minlength']) {
+                <span>{{ 'auth.register.minLength2' | t }}</span>
+              }
+            </div>
+          }
+
+        </div>
+
+      </div>
+
+      <div class="form-floating mb-3">
+
+        <input
+          type="email"
+          class="form-control"
+          id="email"
+          placeholder="name@example.com"
+          formControlName="email"
+          [class.is-invalid]="email.invalid && (email.touched || submitted)">
+
+        <label for="email"><i class="bi bi-envelope"></i> {{ 'auth.register.emailLabel' | t }}</label>
+
+        @if (email.invalid && (email.touched || submitted)) {
+          <div class="field-error">
+            @if (email.errors?.['required']) {
+              <span>{{ 'auth.register.emailRequired' | t }}</span>
+            } @else if (email.errors?.['email']) {
+              <span>{{ 'auth.register.emailInvalid' | t }}</span>
+            }
+          </div>
+        }
+
+      </div>
+
+      <div class="form-floating mb-3">
+
+        <input
+          type="tel"
+          class="form-control"
+          id="phoneNumber"
+          [placeholder]="'auth.register.phonePlaceholder' | t"
+          formControlName="phoneNumber"
+          [class.is-invalid]="phoneNumber.invalid && (phoneNumber.touched || submitted)">
+
+        <label for="phoneNumber"><i class="bi bi-telephone"></i> {{ 'auth.register.phoneLabel' | t }}</label>
+
+        @if (phoneNumber.invalid && (phoneNumber.touched || submitted)) {
+          <div class="field-error">
+            @if (phoneNumber.errors?.['required']) {
+              <span>{{ 'auth.register.phoneRequired' | t }}</span>
+            } @else if (phoneNumber.errors?.['pattern']) {
+              <span>{{ 'auth.register.phoneInvalid' | t }}</span>
+            }
+          </div>
+        }
+
+      </div>
+
+      <div class="password-field mb-3">
+
+        <div class="form-floating">
+
+          <input
+            [type]="showPassword() ? 'text' : 'password'"
+            class="form-control"
+            id="password"
+            [placeholder]="'auth.register.passwordPlaceholder' | t"
+            formControlName="password"
+            [class.is-invalid]="password.invalid && (password.touched || submitted)">
+
+          <label for="password"><i class="bi bi-lock"></i> {{ 'auth.register.passwordLabel' | t }}</label>
+
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="togglePasswordVisibility()"
+            [attr.aria-label]="showPassword() ? ('auth.register.hidePassword' | t) : ('auth.register.showPassword' | t)">
+            <i class="bi" [class.bi-eye]="!showPassword()" [class.bi-eye-slash]="showPassword()"></i>
+          </button>
+
+        </div>
+
+        @if (password.invalid && (password.touched || submitted)) {
+          <div class="field-error">
+            @if (password.errors?.['required']) {
+              <span>{{ 'auth.register.passwordRequired' | t }}</span>
+            } @else if (password.errors?.['minlength']) {
+              <span>{{ 'auth.register.passwordMinLength' | t }}</span>
+            }
+          </div>
+        }
+
+      </div>
+
+      <div class="password-field mb-2">
+
+        <div class="form-floating">
+
+          <input
+            [type]="showConfirmPassword() ? 'text' : 'password'"
+            class="form-control"
+            id="confirmPassword"
+            [placeholder]="'auth.register.confirmPasswordPlaceholder' | t"
+            formControlName="confirmPassword"
+            [class.is-invalid]="(confirmPassword.invalid || form.errors?.['passwordsMismatch']) && (confirmPassword.touched || submitted)">
+
+          <label for="confirmPassword"><i class="bi bi-lock-fill"></i> {{ 'auth.register.confirmPasswordLabel' | t }}</label>
+
+          <button
+            type="button"
+            class="password-toggle"
+            (click)="toggleConfirmPasswordVisibility()"
+            [attr.aria-label]="showConfirmPassword() ? ('auth.register.hidePassword' | t) : ('auth.register.showPassword' | t)">
+            <i class="bi" [class.bi-eye]="!showConfirmPassword()" [class.bi-eye-slash]="showConfirmPassword()"></i>
+          </button>
+
+        </div>
+
+        @if ((confirmPassword.invalid || form.errors?.['passwordsMismatch']) && (confirmPassword.touched || submitted)) {
+          <div class="field-error">
+            @if (confirmPassword.errors?.['required']) {
+              <span>{{ 'auth.register.confirmPasswordRequired' | t }}</span>
+            } @else if (form.errors?.['passwordsMismatch']) {
+              <span>{{ 'auth.register.passwordsMismatch' | t }}</span>
+            }
+          </div>
+        }
+
+      </div>
+
+      <div class="role-field mb-4">
+
+        <span class="role-label">{{ 'auth.register.registeringAs' | t }}</span>
+
+        <div class="role-toggle-group" role="radiogroup" aria-label="Account role">
+          @for (option of roleOptions; track option.value) {
+            <button
+              type="button"
+              class="role-toggle"
+              role="radio"
+              [attr.aria-checked]="role.value === option.value"
+              [class.active]="role.value === option.value"
+              (click)="selectRole(option.value)">
+              <i class="bi" [class]="option.icon"></i>
+              <span>{{ option.labelKey | t }}</span>
+            </button>
+          }
+        </div>
+
+      </div>
+
+      <div class="d-grid mt-4">
+        <button type="submit" class="btn btn-primary btn-lg" [disabled]="isSubmitting()">
+          @if (isSubmitting()) {
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            <span>{{ 'auth.register.creatingAccount' | t }}</span>
+          } @else {
+            <i class="bi bi-person-plus"></i>
+            <span>{{ 'auth.register.createAccount' | t }}</span>
+          }
+        </button>
+      </div>
+
+    </form>
+
+    <p class="switch-link">
+      {{ 'auth.register.alreadyHaveAccount' | t }}
+      <a routerLink="/login">{{ 'auth.register.signIn' | t }}</a>
+    </p>
+
+  </div>
+
+</div>
