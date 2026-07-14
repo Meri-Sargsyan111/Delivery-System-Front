@@ -1,5 +1,6 @@
 import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { HttpEventType } from '@angular/common/http';
 import { AuthService, resolveAvatarUrl } from '../../services/auth.service';
 import { TranslatePipe } from '../../i18n/translate.pipe';
 import { TranslationService } from '../../i18n/translation.service';
@@ -50,9 +51,19 @@ export class Profile {
   private avatarPreviewUrl = signal<string | null>(null);
   private avatarBroken = signal(false);
   isUploadingAvatar = signal(false);
+  /** Percentage (0-100) while the browser reports upload progress; null until the first event arrives. */
+  uploadProgress = signal<number | null>(null);
 
   displayAvatarUrl = computed(() => this.avatarPreviewUrl() ?? this.avatarUrl());
   showAvatarImage = computed(() => !!this.displayAvatarUrl() && !this.avatarBroken());
+
+  /** Fallback shown in place of a missing photo - initials read better than a generic icon. */
+  private firstNameSig = signal('');
+  private lastNameSig = signal('');
+  avatarInitials = computed(() => {
+    const initials = `${this.firstNameSig().charAt(0)}${this.lastNameSig().charAt(0)}`.toUpperCase();
+    return initials || null;
+  });
 
   form = this.fb.group({
     firstName: this.fb.control('', [Validators.required, Validators.minLength(2)]),
@@ -90,6 +101,8 @@ export class Profile {
           lastName: profile.lastName,
           phoneNumber: profile.phoneNumber
         });
+        this.firstNameSig.set(profile.firstName);
+        this.lastNameSig.set(profile.lastName);
         this.avatarBroken.set(false);
         this.avatarUrl.set(resolveAvatarUrl(profile.avatarUrl));
         this.isLoading.set(false);
@@ -132,6 +145,8 @@ export class Profile {
           lastName: profile.lastName,
           phoneNumber: profile.phoneNumber
         });
+        this.firstNameSig.set(profile.firstName);
+        this.lastNameSig.set(profile.lastName);
         this.submitted = false;
         this.successKey.set('profile.updateSuccess');
       },
@@ -183,17 +198,24 @@ export class Profile {
     this.avatarBroken.set(false);
     this.avatarPreviewUrl.set(previewUrl);
     this.isUploadingAvatar.set(true);
+    this.uploadProgress.set(0);
 
     this.authService.uploadAvatar(file).subscribe({
-      next: (profile) => {
-        this.isUploadingAvatar.set(false);
-        this.avatarPreviewUrl.set(null);
-        URL.revokeObjectURL(previewUrl);
-        this.avatarUrl.set(resolveAvatarUrl(profile.avatarUrl));
-        this.successKey.set('profile.avatarUploadSuccess');
+      next: (event) => {
+        if (event.type === HttpEventType.UploadProgress && event.total) {
+          this.uploadProgress.set(Math.round((100 * event.loaded) / event.total));
+        } else if (event.type === HttpEventType.Response && event.body) {
+          this.isUploadingAvatar.set(false);
+          this.uploadProgress.set(null);
+          this.avatarPreviewUrl.set(null);
+          URL.revokeObjectURL(previewUrl);
+          this.avatarUrl.set(resolveAvatarUrl(event.body.avatarUrl));
+          this.successKey.set('profile.avatarUploadSuccess');
+        }
       },
       error: (err) => {
         this.isUploadingAvatar.set(false);
+        this.uploadProgress.set(null);
         this.avatarPreviewUrl.set(null);
         URL.revokeObjectURL(previewUrl);
         if (err.error?.message) {

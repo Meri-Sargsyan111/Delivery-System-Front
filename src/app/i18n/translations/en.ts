@@ -336,6 +336,8 @@ export const EN: TranslationDict = {
     loadError: 'Failed to load profile. Please try again.',
     avatarAlt: 'Profile photo',
     avatarChangeLabel: 'Change profile photo',
+    avatarUploadButton: 'Upload Photo',
+    avatarUploading: 'Uploading...',
     avatarUploadSuccess: 'Avatar updated successfully.',
     avatarUploadError: 'Failed to upload avatar. Please try again.',
     avatarInvalidType: 'Only JPG and PNG images are allowed.',

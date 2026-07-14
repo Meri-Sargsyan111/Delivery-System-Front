@@ -31,40 +31,77 @@
 
       <div class="profile-identity">
 
-        <button
-          type="button"
-          class="profile-identity-avatar profile-identity-avatar-button"
-          (click)="openAvatarPicker()"
-          [disabled]="isUploadingAvatar()"
-          [attr.aria-label]="'profile.avatarChangeLabel' | t">
+        <div class="profile-identity-main">
 
-          @if (showAvatarImage()) {
-            <img [src]="displayAvatarUrl()" [alt]="'profile.avatarAlt' | t" (error)="onAvatarError()">
-          } @else {
-            <i class="bi bi-person-circle"></i>
-          }
+          <button
+            type="button"
+            class="profile-identity-avatar profile-identity-avatar-button"
+            (click)="openAvatarPicker()"
+            [disabled]="isUploadingAvatar()"
+            [attr.aria-label]="'profile.avatarChangeLabel' | t">
 
-          @if (isUploadingAvatar()) {
-            <span class="avatar-upload-overlay">
-              <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-            </span>
-          } @else {
-            <span class="avatar-edit-badge"><i class="bi bi-camera-fill"></i></span>
-          }
+            @if (showAvatarImage()) {
+              <img [src]="displayAvatarUrl()" [alt]="'profile.avatarAlt' | t" (error)="onAvatarError()">
+            } @else if (avatarInitials(); as initials) {
+              <span class="avatar-initials">{{ initials }}</span>
+            } @else {
+              <i class="bi bi-person-circle"></i>
+            }
 
-        </button>
+            @if (isUploadingAvatar()) {
+              <span class="avatar-upload-overlay">
+                @if (uploadProgress(); as progress) {
+                  <span class="avatar-upload-percent">{{ progress }}%</span>
+                } @else {
+                  <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                }
+              </span>
+            } @else {
+              <span class="avatar-edit-badge"><i class="bi bi-camera-fill"></i></span>
+            }
 
-        <input
-          #avatarInput
-          type="file"
-          accept="image/jpeg,image/png"
-          class="visually-hidden"
-          (change)="onAvatarSelected($event)">
+          </button>
 
-        <div class="profile-identity-info">
-          <span class="profile-identity-email">{{ email }}</span>
-          <span class="profile-identity-role">{{ roleKey() | t }}</span>
+          <input
+            #avatarInput
+            type="file"
+            accept="image/jpeg,image/png"
+            class="visually-hidden"
+            (change)="onAvatarSelected($event)">
+
+          <div class="profile-identity-info">
+            <span class="profile-identity-email">{{ email }}</span>
+            <span class="profile-identity-role">{{ roleKey() | t }}</span>
+
+            <button
+              type="button"
+              class="avatar-upload-btn"
+              (click)="openAvatarPicker()"
+              [disabled]="isUploadingAvatar()">
+              @if (isUploadingAvatar()) {
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span>{{ 'profile.avatarUploading' | t }}</span>
+              } @else {
+                <i class="bi bi-upload"></i>
+                <span>{{ 'profile.avatarUploadButton' | t }}</span>
+              }
+            </button>
+
+          </div>
+
         </div>
+
+        @if (isUploadingAvatar()) {
+          <div
+            class="avatar-progress-bar"
+            role="progressbar"
+            [attr.aria-valuenow]="uploadProgress() ?? 0"
+            aria-valuemin="0"
+            aria-valuemax="100">
+            <div class="avatar-progress-fill" [style.width.%]="uploadProgress() ?? 0"></div>
+          </div>
+        }
+
       </div>
 
       <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>

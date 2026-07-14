@@ -336,6 +336,8 @@ export const RU: TranslationDict = {
     loadError: 'Не удалось загрузить профиль. Попробуйте снова.',
     avatarAlt: 'Фото профиля',
     avatarChangeLabel: 'Изменить фото профиля',
+    avatarUploadButton: 'Загрузить фото',
+    avatarUploading: 'Загрузка...',
     avatarUploadSuccess: 'Аватар успешно обновлён.',
     avatarUploadError: 'Не удалось загрузить аватар. Попробуйте снова.',
     avatarInvalidType: 'Разрешены только изображения JPG и PNG.',

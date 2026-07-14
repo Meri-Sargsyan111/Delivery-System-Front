@@ -336,6 +336,8 @@ export const HY: TranslationDict = {
     loadError: 'Չհաջողվեց բեռնել պրոֆիլը։ Փորձեք կրկին։',
     avatarAlt: 'Պրոֆիլի նկար',
     avatarChangeLabel: 'Փոխել պրոֆիլի նկարը',
+    avatarUploadButton: 'Վերբեռնել նկար',
+    avatarUploading: 'Վերբեռնվում է...',
     avatarUploadSuccess: 'Ավատարը հաջողությամբ թարմացվել է։',
     avatarUploadError: 'Չհաջողվեց վերբեռնել ավատարը։ Փորձեք կրկին։',
     avatarInvalidType: 'Թույլատրվում են միայն JPG և PNG պատկերներ։',

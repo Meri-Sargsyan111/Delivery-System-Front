@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { Observable, finalize, shareReplay, tap } from 'rxjs';
@@ -129,11 +129,19 @@ export class AuthService {
     return this.http.put<UserProfileResponse>(`${AUTH_API_BASE}/me`, payload, { headers: this.authHeaders() });
   }
 
-  /** Content-Type is left for HttpClient to set (multipart boundary) - authHeaders() only adds Authorization. */
-  uploadAvatar(file: File): Observable<UserProfileResponse> {
+  /**
+   * Content-Type is left for HttpClient to set (multipart boundary) - authHeaders() only adds
+   * Authorization. Emits HttpEvent stream (reportProgress) so callers can drive an upload
+   * progress bar; the final UserProfileResponse arrives as the HttpEventType.Response event.
+   */
+  uploadAvatar(file: File): Observable<HttpEvent<UserProfileResponse>> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<UserProfileResponse>(`${AUTH_API_BASE}/me/avatar`, formData, { headers: this.authHeaders() });
+    return this.http.post<UserProfileResponse>(`${AUTH_API_BASE}/me/avatar`, formData, {
+      headers: this.authHeaders(),
+      reportProgress: true,
+      observe: 'events'
+    });
   }
 
   /**
