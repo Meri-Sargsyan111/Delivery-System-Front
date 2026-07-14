@@ -1,4 +1,4 @@
-import { Component, ElementRef, ViewChild, computed, inject, signal } from '@angular/core';
+import { Component, ElementRef, OnDestroy, ViewChild, computed, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { HttpEventType } from '@angular/common/http';
 import { AuthService, resolveAvatarUrl } from '../../services/auth.service';
@@ -17,7 +17,7 @@ const MAX_AVATAR_BYTES = 5 * 1024 * 1024;
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
-export class Profile {
+export class Profile implements OnDestroy {
 
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
@@ -48,6 +48,8 @@ export class Profile {
   @ViewChild('avatarInput') private avatarInput?: ElementRef<HTMLInputElement>;
 
   private avatarUrl = signal<string | null>(null);
+  /** Object URL currently backing avatarUrl() - tracked so it can be revoked before the next one replaces it. */
+  private avatarObjectUrl: string | null = null;
   private avatarPreviewUrl = signal<string | null>(null);
   private avatarBroken = signal(false);
   isUploadingAvatar = signal(false);
@@ -104,7 +106,7 @@ export class Profile {
         this.firstNameSig.set(profile.firstName);
         this.lastNameSig.set(profile.lastName);
         this.avatarBroken.set(false);
-        this.avatarUrl.set(resolveAvatarUrl(profile.avatarUrl));
+        this.loadAvatar(profile.avatarUrl);
         this.isLoading.set(false);
       },
       error: (err) => {
@@ -161,6 +163,41 @@ export class Profile {
     });
   }
 
+  ngOnDestroy(): void {
+    if (this.avatarObjectUrl) {
+      URL.revokeObjectURL(this.avatarObjectUrl);
+    }
+  }
+
+  /**
+   * Avatar files live behind Bearer auth (see AuthService.fetchAvatarObjectUrl), so the URL
+   * the server hands back can't be used as an <img src> directly - it has to be fetched with
+   * the token and swapped for a local object URL first.
+   */
+  private loadAvatar(avatarPath: string | null | undefined): void {
+    const resolvedUrl = resolveAvatarUrl(avatarPath);
+
+    if (this.avatarObjectUrl) {
+      URL.revokeObjectURL(this.avatarObjectUrl);
+      this.avatarObjectUrl = null;
+    }
+
+    if (!resolvedUrl) {
+      this.avatarUrl.set(null);
+      return;
+    }
+
+    this.authService.fetchAvatarObjectUrl(resolvedUrl).subscribe({
+      next: (objectUrl) => {
+        this.avatarObjectUrl = objectUrl;
+        this.avatarUrl.set(objectUrl);
+      },
+      error: () => {
+        this.avatarUrl.set(null);
+      }
+    });
+  }
+
   openAvatarPicker(): void {
     if (this.isUploadingAvatar()) {
       return;
@@ -209,7 +246,7 @@ export class Profile {
           this.uploadProgress.set(null);
           this.avatarPreviewUrl.set(null);
           URL.revokeObjectURL(previewUrl);
-          this.avatarUrl.set(resolveAvatarUrl(event.body.avatarUrl));
+          this.loadAvatar(event.body.avatarUrl);
           this.successKey.set('profile.avatarUploadSuccess');
         }
       },

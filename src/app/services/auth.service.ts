@@ -2,7 +2,7 @@ import { Injectable, computed, inject, signal } from '@angular/core';
 import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { Observable, finalize, shareReplay, tap } from 'rxjs';
+import { Observable, finalize, map, shareReplay, tap } from 'rxjs';
 import { decodeJwtPayload } from '../utils/jwt.util';
 import { environment } from '../../environments/environment';
 
@@ -142,6 +142,18 @@ export class AuthService {
       reportProgress: true,
       observe: 'events'
     });
+  }
+
+  /**
+   * Avatar files are served from a Bearer-protected route with no anonymous GET, so a plain
+   * `<img src>` can never load them - the browser has no way to attach an Authorization header
+   * to an image request. Fetches the file through HttpClient (which does attach it) and hands
+   * back an object URL the template can bind directly; the caller owns revoking it.
+   */
+  fetchAvatarObjectUrl(resolvedAvatarUrl: string): Observable<string> {
+    return this.http
+      .get(resolvedAvatarUrl, { headers: this.authHeaders(), responseType: 'blob' })
+      .pipe(map((blob) => URL.createObjectURL(blob)));
   }
 
   /**
