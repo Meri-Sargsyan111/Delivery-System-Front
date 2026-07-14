@@ -8,6 +8,17 @@ export const EN: TranslationDict = {
     yes: 'Yes',
     no: 'No',
   },
+  landing: {
+    hero: {
+      badge: 'Real-time delivery platform',
+      titleLead: 'Deliveries, tracked',
+      titleAccent: 'end to end.',
+      subtitle: 'Create, dispatch and follow every order live — from courier assignment to doorstep, with real-time location and instant notifications.',
+      statOrders: 'Orders delivered',
+      statOnTime: 'On-time rate',
+      statSupport: 'Live support',
+    },
+  },
   nav: {
     dashboard: 'Dashboard',
     orders: 'Orders',

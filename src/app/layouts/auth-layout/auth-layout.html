@@ -1,252 +1,81 @@
 <div class="auth-shell">
 
-  <div class="auth-panel">
+  <div class="hero-panel">
 
-    <a class="auth-brand" routerLink="/login">
-      <span class="brand-icon"><i class="bi bi-truck"></i></span>
-      <span class="brand-text">Delivery System</span>
-    </a>
+    <div class="hero-top">
 
-    <div class="auth-lang">
+      <a class="auth-brand" routerLink="/login">
+        <span class="brand-icon"><i class="bi bi-truck"></i></span>
+        <span class="brand-text">Delivery System</span>
+      </a>
+
       <app-language-switcher></app-language-switcher>
-    </div>
-
-    <div class="auth-highlights">
-
-      <a class="highlight" routerLink="/about">
-        <i class="bi bi-info-circle"></i>
-        <span>{{ 'nav.aboutSystem' | t }}</span>
-      </a>
-
-      <a class="highlight" routerLink="/how-it-works">
-        <i class="bi bi-diagram-3"></i>
-        <span>{{ 'nav.howItWorks' | t }}</span>
-      </a>
-
-      <a class="highlight" routerLink="/technologies">
-        <i class="bi bi-cpu"></i>
-        <span>{{ 'nav.technologies' | t }}</span>
-      </a>
 
     </div>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <div class="hero-main">
+
+      <span class="hero-badge">
+        <i class="bi bi-lightning-charge-fill"></i>
+        {{ 'landing.hero.badge' | t }}
+      </span>
+
+      <h1 class="hero-title">
+        {{ 'landing.hero.titleLead' | t }}
+        <span class="accent">{{ 'landing.hero.titleAccent' | t }}</span>
+      </h1>
+
+      <p class="hero-subtitle">{{ 'landing.hero.subtitle' | t }}</p>
+
+      <div class="hero-illustration">
+        <img
+          src="images/hero-delivery.svg"
+          alt="Illustration of a delivery van following a live-tracked route to a destination pin, with order-confirmed, live-tracking and rating status cards"
+          width="560"
+          height="480"
+          loading="eager"
+          fetchpriority="high">
+      </div>
+
+      <div class="hero-stats">
+
+        <div class="hero-stat">
+          <span class="hero-stat-value">10k+</span>
+          <span class="hero-stat-label">{{ 'landing.hero.statOrders' | t }}</span>
+        </div>
+
+        <div class="hero-stat">
+          <span class="hero-stat-value">98%</span>
+          <span class="hero-stat-label">{{ 'landing.hero.statOnTime' | t }}</span>
+        </div>
+
+        <div class="hero-stat">
+          <span class="hero-stat-value">24/7</span>
+          <span class="hero-stat-label">{{ 'landing.hero.statSupport' | t }}</span>
+        </div>
+
+      </div>
+
+      <div class="auth-highlights">
+
+        <a class="highlight" routerLink="/about">
+          <i class="bi bi-info-circle"></i>
+          <span>{{ 'nav.aboutSystem' | t }}</span>
+        </a>
+
+        <a class="highlight" routerLink="/how-it-works">
+          <i class="bi bi-diagram-3"></i>
+          <span>{{ 'nav.howItWorks' | t }}</span>
+        </a>
+
+        <a class="highlight" routerLink="/technologies">
+          <i class="bi bi-cpu"></i>
+          <span>{{ 'nav.technologies' | t }}</span>
+        </a>
+
+      </div>
+
+    </div>
 
     <p class="auth-footnote">&copy; 2026 Delivery System</p>
 
