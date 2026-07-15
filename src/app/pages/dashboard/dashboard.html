@@ -17,7 +17,7 @@
 
 <div class="kpi-row">
 
-  <div class="kpi-card kpi-total" role="button" tabindex="0" (click)="goToOrders()" (keydown.enter)="goToOrders()">
+  <div class="kpi-card kpi-total" role="button" tabindex="0" (click)="goToOrders()" (keydown.enter)="goToOrders()" (keydown.space)="$event.preventDefault(); goToOrders()">
     <div class="kpi-icon"><i class="bi bi-collection"></i></div>
     <div class="kpi-body">
       <span class="kpi-value">{{ totalOrders }}</span>
@@ -25,7 +25,7 @@
     </div>
   </div>
 
-  <div class="kpi-card kpi-progress" role="button" tabindex="0" (click)="goToOrders('IN_PROGRESS')" (keydown.enter)="goToOrders('IN_PROGRESS')">
+  <div class="kpi-card kpi-progress" role="button" tabindex="0" (click)="goToOrders('IN_PROGRESS')" (keydown.enter)="goToOrders('IN_PROGRESS')" (keydown.space)="$event.preventDefault(); goToOrders('IN_PROGRESS')">
     <div class="kpi-icon"><i class="bi bi-lightning-charge"></i></div>
     <div class="kpi-body">
       <span class="kpi-value">{{ inProgressOrders }}</span>
@@ -33,7 +33,7 @@
     </div>
   </div>
 
-  <div class="kpi-card kpi-delivered" role="button" tabindex="0" (click)="goToOrders('DELIVERED')" (keydown.enter)="goToOrders('DELIVERED')">
+  <div class="kpi-card kpi-delivered" role="button" tabindex="0" (click)="goToOrders('DELIVERED')" (keydown.enter)="goToOrders('DELIVERED')" (keydown.space)="$event.preventDefault(); goToOrders('DELIVERED')">
     <div class="kpi-icon"><i class="bi bi-check-circle"></i></div>
     <div class="kpi-body">
       <span class="kpi-value">{{ deliveredOrders }}</span>
@@ -41,7 +41,7 @@
     </div>
   </div>
 
-  <div class="kpi-card kpi-cancelled" role="button" tabindex="0" (click)="goToOrders('CANCELLED')" (keydown.enter)="goToOrders('CANCELLED')">
+  <div class="kpi-card kpi-cancelled" role="button" tabindex="0" (click)="goToOrders('CANCELLED')" (keydown.enter)="goToOrders('CANCELLED')" (keydown.space)="$event.preventDefault(); goToOrders('CANCELLED')">
     <div class="kpi-icon"><i class="bi bi-x-circle"></i></div>
     <div class="kpi-body">
       <span class="kpi-value">{{ cancelledOrders }}</span>

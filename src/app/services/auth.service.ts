@@ -1,5 +1,5 @@
 import { Injectable, computed, inject, signal } from '@angular/core';
-import { HttpClient, HttpEvent, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpEvent } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { Observable, finalize, map, shareReplay, tap } from 'rxjs';
@@ -29,20 +29,6 @@ export interface DecodedAccessToken {
  */
 export function resolveAvatarUrl(avatarUrl: string | null | undefined): string | null {
   return avatarUrl ? `${AUTH_ORIGIN}${avatarUrl}` : null;
-}
-
-/** Maps the raw JWT role claim to a clean, human-readable label. */
-export function roleLabel(role: AppRole | null | undefined): string {
-  switch (role) {
-    case 'ROLE_ADMIN':
-      return 'Admin';
-    case 'ROLE_CUSTOMER':
-      return 'Customer';
-    case 'ROLE_COURIER':
-      return 'Courier';
-    default:
-      return 'User';
-  }
 }
 
 export interface LoginRequest {
@@ -122,23 +108,21 @@ export class AuthService {
   }
 
   getProfile(): Observable<UserProfileResponse> {
-    return this.http.get<UserProfileResponse>(`${AUTH_API_BASE}/me`, { headers: this.authHeaders() });
+    return this.http.get<UserProfileResponse>(`${AUTH_API_BASE}/me`);
   }
 
   updateProfile(payload: UpdateProfileRequest): Observable<UserProfileResponse> {
-    return this.http.put<UserProfileResponse>(`${AUTH_API_BASE}/me`, payload, { headers: this.authHeaders() });
+    return this.http.put<UserProfileResponse>(`${AUTH_API_BASE}/me`, payload);
   }
 
   /**
-   * Content-Type is left for HttpClient to set (multipart boundary) - authHeaders() only adds
-   * Authorization. Emits HttpEvent stream (reportProgress) so callers can drive an upload
-   * progress bar; the final UserProfileResponse arrives as the HttpEventType.Response event.
+   * Emits an HttpEvent stream (reportProgress) so callers can drive an upload progress bar;
+   * the final UserProfileResponse arrives as the HttpEventType.Response event.
    */
   uploadAvatar(file: File): Observable<HttpEvent<UserProfileResponse>> {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<UserProfileResponse>(`${AUTH_API_BASE}/me/avatar`, formData, {
-      headers: this.authHeaders(),
       reportProgress: true,
       observe: 'events'
     });
@@ -147,12 +131,13 @@ export class AuthService {
   /**
    * Avatar files are served from a Bearer-protected route with no anonymous GET, so a plain
    * `<img src>` can never load them - the browser has no way to attach an Authorization header
-   * to an image request. Fetches the file through HttpClient (which does attach it) and hands
-   * back an object URL the template can bind directly; the caller owns revoking it.
+   * to an image request. Fetches the file through HttpClient (which does attach it via the
+   * auth interceptor) and hands back an object URL the template can bind directly; the caller
+   * owns revoking it.
    */
   fetchAvatarObjectUrl(resolvedAvatarUrl: string): Observable<string> {
     return this.http
-      .get(resolvedAvatarUrl, { headers: this.authHeaders(), responseType: 'blob' })
+      .get(resolvedAvatarUrl, { responseType: 'blob' })
       .pipe(map((blob) => URL.createObjectURL(blob)));
   }
 
@@ -221,10 +206,6 @@ export class AuthService {
 
   getToken(): string | null {
     return this.tokenSignal();
-  }
-
-  private authHeaders(): HttpHeaders {
-    return new HttpHeaders({ Authorization: `Bearer ${this.getToken() ?? ''}` });
   }
 
   private setToken(token: string | null): void {

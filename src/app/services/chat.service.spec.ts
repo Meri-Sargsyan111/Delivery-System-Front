@@ -34,9 +34,9 @@ describe('ChatService', () => {
   it('getHistory requests the correct paginated URL', () => {
     service.getHistory(42).subscribe();
 
-    const req = httpMock.expectOne('http://localhost:8080/chat/orders/42/messages?page=0&size=50');
+    const req = httpMock.expectOne('http://localhost:8080/chat/orders/42/messages?page=0&size=1000');
     expect(req.request.method).toBe('GET');
-    req.flush({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 50 });
+    req.flush({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 1000 });
   });
 
   it('getHistory honors a custom page and size', () => {

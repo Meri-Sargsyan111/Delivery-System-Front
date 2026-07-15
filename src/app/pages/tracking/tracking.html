@@ -8,7 +8,9 @@
   <div class="search-card">
     <div class="input-group">
       <span class="input-group-text"><i class="bi bi-hash"></i></span>
+      <label for="tracking-order-id" class="visually-hidden">{{ 'tracking.orderIdPlaceholder' | t }}</label>
       <input
+        id="tracking-order-id"
         type="number"
         class="form-control"
         [placeholder]="'tracking.orderIdPlaceholder' | t"

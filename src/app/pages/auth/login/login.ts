@@ -22,7 +22,6 @@ export class Login {
 
   submitted = false;
   isSubmitting = signal(false);
-  showPassword = signal(false);
 
   readonly demoAccounts = DEMO_ACCOUNTS;
 
@@ -48,10 +47,6 @@ export class Login {
 
   get password() {
     return this.form.controls.password;
-  }
-
-  togglePasswordVisibility() {
-    this.showPassword.update(value => !value);
   }
 
   /** Autofills credentials only - the user must still submit the form manually. */

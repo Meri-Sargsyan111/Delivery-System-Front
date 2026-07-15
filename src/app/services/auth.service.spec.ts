@@ -3,7 +3,7 @@ import { provideHttpClient } from '@angular/common/http';
 import { provideHttpClientTesting } from '@angular/common/http/testing';
 import { provideRouter } from '@angular/router';
 
-import { AuthService, roleLabel } from './auth.service';
+import { AuthService } from './auth.service';
 
 const TOKEN_STORAGE_KEY = 'auth_token';
 
@@ -74,13 +74,5 @@ describe('AuthService', () => {
 
     expect(authService.currentUser()).toBeNull();
     expect(authService.role()).toBeNull();
-  });
-
-  it('maps roles to clean display labels', () => {
-    expect(roleLabel('ROLE_ADMIN')).toBe('Admin');
-    expect(roleLabel('ROLE_CUSTOMER')).toBe('Customer');
-    expect(roleLabel('ROLE_COURIER')).toBe('Courier');
-    expect(roleLabel(null)).toBe('User');
-    expect(roleLabel(undefined)).toBe('User');
   });
 });

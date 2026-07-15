@@ -31,7 +31,7 @@ async function setUpWithRole(role: string | null): Promise<{ component: OrdersLi
 
   httpMock.expectOne('http://localhost:8080/orders?size=1000')
     .flush({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 10 });
-  httpMock.expectOne('http://localhost:8080/courier')
+  httpMock.expectOne('http://localhost:8080/courier?size=1000')
     .flush({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 20 });
 
   await fixture.whenStable();
@@ -55,7 +55,7 @@ describe('OrdersList', () => {
 
     httpMock.expectOne('http://localhost:8080/orders?size=1000')
       .flush({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 10 });
-    httpMock.expectOne('http://localhost:8080/courier')
+    httpMock.expectOne('http://localhost:8080/courier?size=1000')
     .flush({ content: [], totalElements: 0, totalPages: 0, number: 0, size: 20 });
 
     await fixture.whenStable();

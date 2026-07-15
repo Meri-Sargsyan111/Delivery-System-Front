@@ -19,13 +19,6 @@ export interface Courier {
   photoUrl?: string | null;
 }
 
-export interface AssignmentResponse {
-  orderId: number;
-  courierId: number;
-  courierName: string;
-  assignedAt: string;
-}
-
 export interface RatingResponse {
   id: number;
   orderId: number;
@@ -39,16 +32,19 @@ export class CourierService {
 
   private http = inject(HttpClient);
 
+  /** Requests a page large enough to cover every courier rather than the backend's default
+   *  page size of 20 - otherwise the couriers list and the orders-list courier lookup
+   *  silently drop anything past page 1, same as the order-service fix. */
   getCouriers(status?: CourierStatus): Observable<PageResponse<Courier>> {
-    return this.http.get<PageResponse<Courier>>(COURIER_API_BASE, status ? { params: { status } } : {});
+    const params: Record<string, string> = { size: '1000' };
+    if (status) {
+      params['status'] = status;
+    }
+    return this.http.get<PageResponse<Courier>>(COURIER_API_BASE, { params });
   }
 
   getAvailableCouriers(): Observable<Courier[]> {
     return this.http.get<Courier[]>(`${COURIER_API_BASE}/available`);
-  }
-
-  getAssignment(orderId: number): Observable<AssignmentResponse> {
-    return this.http.get<AssignmentResponse>(`${COURIER_API_BASE}/assignment/${orderId}`);
   }
 
   startDelivery(orderId: number): Observable<string> {

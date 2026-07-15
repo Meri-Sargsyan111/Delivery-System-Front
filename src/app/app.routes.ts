@@ -95,5 +95,9 @@ export const routes: Routes = [
         component: Register
       }
     ]
+  },
+  {
+    path: '**',
+    redirectTo: ''
   }
 ];

@@ -32,7 +32,10 @@ export class ChatService {
 
   connectionState = signal<ChatConnectionState>('idle');
 
-  getHistory(orderId: number, page = 0, size = 50): Observable<PageResponse<ChatMessage>> {
+  /** Defaults to a page size large enough to cover a full chat history rather than the
+   *  backend's default of 20 - the component never overrides this, so a small default
+   *  here would silently drop older messages, same as the order-service fix. */
+  getHistory(orderId: number, page = 0, size = 1000): Observable<PageResponse<ChatMessage>> {
     return this.http.get<PageResponse<ChatMessage>>(
       `${CHAT_API_BASE}/orders/${orderId}/messages?page=${page}&size=${size}`
     );
