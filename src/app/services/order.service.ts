@@ -46,8 +46,11 @@ export class OrderService {
     return this.http.post(ORDERS_API_BASE, payload);
   }
 
+  /** Callers (dashboard, orders list) fetch once and paginate/filter client-side, so this
+   *  requests a page large enough to cover every order rather than the backend's default
+   *  page size of 20 - otherwise stats and the list silently drop anything past page 1. */
   getOrders(): Observable<PageResponse<Order>> {
-    return this.http.get<PageResponse<Order>>(ORDERS_API_BASE);
+    return this.http.get<PageResponse<Order>>(ORDERS_API_BASE, { params: { size: '1000' } });
   }
 
   getOrder(orderId: number): Observable<Order> {
@@ -55,7 +58,7 @@ export class OrderService {
   }
 
   searchOrders(status: string): Observable<PageResponse<Order>> {
-    return this.http.get<PageResponse<Order>>(`${ORDERS_API_BASE}/search`, { params: { status } });
+    return this.http.get<PageResponse<Order>>(`${ORDERS_API_BASE}/search`, { params: { status, size: '1000' } });
   }
 
   assignCourier(orderId: number, courierId: number): Observable<OrderActionResponse> {
