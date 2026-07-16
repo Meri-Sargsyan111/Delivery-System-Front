@@ -26,7 +26,7 @@ export interface PageResponse<T> {
 }
 
 export interface CreateOrderRequest {
-  customerName: string;
+  customerId: string;
   customerPhone: string;
   fromAddress: string;
   toAddress: string;

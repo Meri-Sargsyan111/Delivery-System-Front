@@ -39,29 +39,40 @@
                 <span>{{ 'createOrder.sectionContact' | t }}</span>
               </div>
 
-              <div class="form-floating mb-3">
+              @if (isAdmin()) {
+                <div class="form-floating mb-3">
 
-                <input
-                  type="text"
-                  class="form-control"
-                  id="customerName"
-                  [placeholder]="'createOrder.customerNamePlaceholder' | t"
-                  formControlName="customerName"
-                  [class.is-invalid]="customerName.invalid && (customerName.touched || submitted)">
-
-                <label for="customerName">
-                  <i class="bi bi-person"></i> {{ 'createOrder.customerNameLabel' | t }}
-                </label>
-
-                @if (customerName.invalid && (customerName.touched || submitted)) {
-                  <div class="field-error">
-                    @if (customerName.errors?.['required']) {
-                      <span>{{ 'createOrder.customerNameRequired' | t }}</span>
+                  <select
+                    class="form-select"
+                    id="customerId"
+                    formControlName="customerId"
+                    [class.is-invalid]="customerId.invalid && (customerId.touched || submitted)">
+                    <option [ngValue]="null" disabled>
+                      {{ (customersLoading() ? 'createOrder.customersLoading' : 'createOrder.customerPlaceholder') | t }}
+                    </option>
+                    @for (customer of customers(); track customer.id) {
+                      <option [ngValue]="customer.id">{{ customer.firstName }} {{ customer.lastName }} &mdash; {{ customer.email }}</option>
                     }
-                  </div>
-                }
+                  </select>
 
-              </div>
+                  <label for="customerId">
+                    <i class="bi bi-person"></i> {{ 'createOrder.customerLabel' | t }}
+                  </label>
+
+                  @if (customerId.invalid && (customerId.touched || submitted)) {
+                    <div class="field-error">
+                      @if (customerId.errors?.['required']) {
+                        <span>{{ 'createOrder.customerRequired' | t }}</span>
+                      }
+                    </div>
+                  } @else if (customersError()) {
+                    <div class="field-error">
+                      <span>{{ customersError() }}</span>
+                    </div>
+                  }
+
+                </div>
+              }
 
               <div class="form-floating mb-3">
 

@@ -1,6 +1,8 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { OrderService } from '../../services/order.service';
+import { Customer, CustomerService } from '../../services/customer.service';
+import { AuthService } from '../../services/auth.service';
 import { TranslatePipe } from '../../i18n/translate.pipe';
 import { TranslationService } from '../../i18n/translation.service';
 
@@ -34,26 +36,35 @@ function phoneNumberValidator(control: AbstractControl): ValidationErrors | null
   templateUrl: './create-order.html',
   styleUrl: './create-order.css'
 })
-export class CreateOrder {
+export class CreateOrder implements OnInit {
 
   private fb = inject(FormBuilder);
   private orderService = inject(OrderService);
+  private customerService = inject(CustomerService);
+  private authService = inject(AuthService);
   private i18n = inject(TranslationService);
+
+  /** The customer picker is an ADMIN-only concern - a CUSTOMER can only ever order for themselves. */
+  isAdmin = this.authService.isAdmin;
 
   submitted = false;
   isSubmitting = signal(false);
   successMessage = signal<string | null>(null);
   errorMessage = signal<string | null>(null);
 
+  customers = signal<Customer[]>([]);
+  customersLoading = signal(false);
+  customersError = signal<string | null>(null);
+
   form = this.fb.group({
-    customerName: this.fb.control('', [Validators.required]),
+    customerId: this.fb.control<string | null>(null, this.isAdmin() ? [Validators.required] : []),
     customerPhone: this.fb.control('', [Validators.required, Validators.maxLength(20), phoneNumberValidator]),
     fromAddress: this.fb.control('', [Validators.required]),
     toAddress: this.fb.control('', [Validators.required])
   });
 
-  get customerName() {
-    return this.form.controls.customerName;
+  get customerId() {
+    return this.form.controls.customerId;
   }
 
   get customerPhone() {
@@ -68,6 +79,28 @@ export class CreateOrder {
     return this.form.controls.toAddress;
   }
 
+  ngOnInit() {
+    if (this.isAdmin()) {
+      this.loadCustomers();
+    }
+  }
+
+  private loadCustomers() {
+    this.customersLoading.set(true);
+    this.customersError.set(null);
+
+    this.customerService.getCustomers().subscribe({
+      next: (customers) => {
+        this.customersLoading.set(false);
+        this.customers.set(customers);
+      },
+      error: () => {
+        this.customersLoading.set(false);
+        this.customersError.set(this.i18n.t('createOrder.customersLoadError'));
+      }
+    });
+  }
+
   onSubmit() {
     this.submitted = true;
     this.successMessage.set(null);
@@ -80,8 +113,10 @@ export class CreateOrder {
 
     this.isSubmitting.set(true);
 
+    const customerId = this.isAdmin() ? this.customerId.value! : this.authService.currentUser()!.sub;
+
     this.orderService.createOrder({
-      customerName: this.customerName.value!,
+      customerId,
       customerPhone: this.customerPhone.value!,
       fromAddress: this.fromAddress.value!,
       toAddress: this.toAddress.value!
